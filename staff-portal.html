@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SafeVoice Staff Portal</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
+    :root{--bg:#2b1148;--surface:#4b1f78;--surface-2:#5a2790;--surface-3:#200b38;--text:#f7f4ff;--muted:#e6dcff;--line:rgba(255,255,255,.12);--primary:#24c3b5;--danger:#dc6f8a;--shadow:0 18px 45px rgba(8,3,20,.34);--radius-xl:26px;--radius-lg:20px;--radius-md:14px}
+    *{box-sizing:border-box} body{margin:0;font-family:Poppins,Arial,sans-serif;background:linear-gradient(180deg,#2b1148 0%,#3a145f 42%,#200b38 100%);color:var(--text)}
+    .layout{min-height:100vh;display:grid;grid-template-columns:320px minmax(0,1fr)} .sidebar{background:linear-gradient(180deg,#240d3f 0%,#18082c 100%);padding:28px 22px;border-right:1px solid rgba(255,255,255,.08)}
+    .brand{display:flex;gap:14px;align-items:center}.brand-mark{width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,var(--primary),#8bf0e5);display:grid;place-items:center;font-size:24px}.brand h1{margin:0;font-size:20px}.brand p{margin:4px 0 0;font-size:12px;color:rgba(255,255,255,.78)}
+    .sidebar-note{margin-top:20px;padding:16px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);border-radius:18px;font-size:13px;line-height:1.6}.nav{display:grid;gap:8px;margin-top:20px}.nav button{border:0;text-align:left;background:transparent;color:#f5f7fa;padding:12px 14px;border-radius:14px}.nav button.active,.nav button:hover{background:rgba(255,255,255,.12)}
+    .content{padding:26px}.topbar{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:20px}.headline h2{margin:0;font-size:2rem}.headline p{margin:8px 0 0;color:var(--muted)}.pill{background:rgba(36,195,181,.16);color:#a8fff6;border:1px solid rgba(36,195,181,.32);padding:10px 14px;border-radius:999px;font-size:13px;font-weight:600}
+    .grid{display:grid;gap:18px}.grid-2{grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr)}.card{background:linear-gradient(180deg,rgba(75,31,120,.96) 0%,rgba(58,20,95,.98) 100%);border:1px solid var(--line);border-radius:var(--radius-xl);box-shadow:var(--shadow);padding:22px}.button-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}.btn{border:0;border-radius:14px;padding:13px 16px;font-weight:700;cursor:pointer}.btn-primary{background:var(--primary);color:#1b1030}.btn-secondary{background:rgba(255,255,255,.08);color:var(--text);border:1px solid var(--line)}.btn-danger{background:var(--danger);color:#fff}
+    input,select,textarea{width:100%;padding:14px 15px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--text);font:inherit} .form-gap{display:grid;gap:14px;margin-top:16px}.error{color:#ffb3b3;font-weight:700}.info{color:#a8fff6;font-weight:700}.analytics{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-top:18px}.analytic,.support-card{border:1px solid var(--line);background:rgba(255,255,255,.05);border-radius:18px;padding:18px}.analytic strong{display:block;font-size:1.8rem}
+    table{width:100%;border-collapse:collapse;margin-top:18px} th,td{text-align:left;padding:12px;border-bottom:1px solid rgba(255,255,255,.08);vertical-align:top} .badge{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(36,195,181,.16);border:1px solid rgba(36,195,181,.32)}
+    @media (max-width:980px){.layout{grid-template-columns:1fr}.sidebar{height:auto;position:static}.grid-2{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark">🛡</div><div><h1>SAFEVOICE</h1><p>Staff portal</p></div></div>
+    <div class="sidebar-note">Separate web portal for SafeVoice admin and social worker access. Public users should use the main app only.</div>
+    <div class="nav">
+      <button id="tab-admin" class="active">Admin Portal</button>
+      <button id="tab-worker">Social Worker Portal</button>
+    </div>
+  </aside>
+  <main class="content">
+    <div class="topbar"><div class="headline"><h2 id="pageTitle">Admin Portal</h2><p id="pageDesc">Administrative overview for submitted cases, open alerts, and staff coverage.</p></div><div class="pill">SafeVoice web staff access</div></div>
+    <section id="authCard" class="card">
+      <h3 id="authHeading">Admin Login</h3>
+      <p id="authCopy">Use staff credentials to open the secure case management portal.</p>
+      <div class="form-gap">
+        <input id="username" placeholder="Username" />
+        <input id="password" placeholder="Password" type="password" />
+      </div>
+      <p id="authMessage"></p>
+      <div class="button-row"><button class="btn btn-primary" id="loginBtn">Open Portal</button></div>
+    </section>
+    <section id="portalView" style="display:none" class="grid grid-2">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:flex-start">
+          <div><h3 id="portalHeading">Admin Oversight Panel</h3><p id="portalCopy">Live case data loaded from the backend.</p></div>
+          <div class="button-row" style="margin-top:0"><button class="btn btn-secondary" id="refreshBtn">Refresh</button><button class="btn btn-danger" id="logoutBtn">Logout</button></div>
+        </div>
+        <div id="metrics" class="analytics"></div>
+        <div id="tableWrap"></div>
+      </div>
+      <div class="card">
+        <h3>Case Details</h3>
+        <div id="detailPane"><p>Select a case to review details.</p></div>
+        <div id="workerActions" class="button-row" style="display:none">
+          <button class="btn btn-secondary" data-status="Reviewing">Mark Reviewing</button>
+          <button class="btn btn-primary" data-status="Resolved">Mark Resolved</button>
+        </div>
+        <p id="updateMsg"></p>
+      </div>
+    </section>
+  </main>
+</div>
+<script>
+const API_BASE = location.origin.startsWith('http') && !location.origin.includes('file://') ? (location.origin.includes('localhost:') && !location.port ? 'http://localhost:5000/api' : `${location.protocol}//${location.hostname}:5000/api`) : 'http://localhost:5000/api';
+let role='admin', cases=[], selectedCase=null;
+const cfg={admin:{title:'Admin Portal',desc:'Administrative overview for submitted cases, open alerts, and staff coverage.',auth:'Admin Login',copy:'Use admin credentials to open the secure case management portal.',endpoint:'/auth/admin/login',portal:'Admin Oversight Panel',portalCopy:'Live case data loaded from the backend.'},worker:{title:'Social Worker Portal',desc:'Review assigned cases and update case progress.',auth:'Social Worker Login',copy:'Use social worker credentials to open the case review portal.',endpoint:'/auth/worker/login',portal:'Social Worker Dashboard',portalCopy:'Review submitted cases and update safe follow-up actions.'}};
+const $=id=>document.getElementById(id);
+function setRole(next){role=next;document.querySelectorAll('.nav button').forEach(btn=>btn.classList.toggle('active',btn.id===`tab-${next}`));$('pageTitle').textContent=cfg[next].title;$('pageDesc').textContent=cfg[next].desc;$('authHeading').textContent=cfg[next].auth;$('authCopy').textContent=cfg[next].copy;$('portalHeading').textContent=cfg[next].portal;$('portalCopy').textContent=cfg[next].portalCopy;$('workerActions').style.display=next==='worker'&&selectedCase?'flex':'none';$('authMessage').textContent='';}
+async function request(path, options){const res=await fetch(`${API_BASE}${path}`,{headers:{'Content-Type':'application/json'},...options});const data=await res.json().catch(()=>({}));if(!res.ok) throw new Error(data.message||'Request failed');return data;}
+function renderMetrics(){const totalOpen=cases.filter(c=>c.status!=='Resolved').length;const high=cases.filter(c=>c.priority==='High'&&c.status!=='Resolved').length;const officers=new Set(cases.map(c=>c.assignedOfficer||c.assignedTo||'socialworker')).size;$('metrics').innerHTML=`<div class="analytic"><strong>${cases.length}</strong><p>Total cases</p></div><div class="analytic"><strong>${totalOpen}</strong><p>Total open cases</p></div><div class="analytic"><strong>${high}</strong><p>High-priority alerts</p></div><div class="analytic"><strong>${Math.max(1,officers)}</strong><p>Active support officers</p></div>`;}
+function renderTable(){const visible = role==='worker' ? cases.filter(c=>(c.assignedOfficer||c.assignedTo||'socialworker').toLowerCase()==='socialworker') : cases; if(!visible.length){$('tableWrap').innerHTML='<p>No submitted cases yet.</p>'; return;} $('tableWrap').innerHTML=`<table><thead><tr><th>Case ID</th><th>Incident</th><th>Location</th><th>Status</th><th>Assigned To</th></tr></thead><tbody>${visible.map(c=>`<tr data-caseid="${c.caseId}"><td>${c.caseId}</td><td>${c.incidentType}</td><td>${c.location||c.locationType||'Not shared'}</td><td>${c.status}</td><td>${c.assignedOfficer||c.assignedTo||'socialworker'}</td></tr>`).join('')}</tbody></table>`;document.querySelectorAll('tr[data-caseid]').forEach(tr=>tr.onclick=()=>selectCase(tr.dataset.caseid));}
+function selectCase(caseId){selectedCase=cases.find(c=>c.caseId===caseId)||null;if(!selectedCase){$('detailPane').innerHTML='<p>Select a case to review details.</p>';return;}$('detailPane').innerHTML=`<div class="support-card"><strong>Case ID</strong><p>${selectedCase.caseId}</p></div><div class="support-card"><strong>Incident type</strong><p>${selectedCase.incidentType}</p></div><div class="support-card"><strong>Location</strong><p>${selectedCase.location||selectedCase.locationType||'Not shared'}</p></div><div class="support-card"><strong>Status</strong><p><span class="badge">${selectedCase.status}</span></p></div><div class="support-card"><strong>Priority</strong><p>${selectedCase.priority}</p></div><div class="support-card"><strong>Contact</strong><p>${selectedCase.contact?.preference==='anonymous'?'Anonymous':(selectedCase.contact?.value||selectedCase.contactPreference||'Anonymous')}</p></div><div class="support-card"><strong>Description</strong><p>${selectedCase.incidentDetails||selectedCase.description||'No additional narrative submitted.'}</p></div>`;$('workerActions').style.display=role==='worker'?'flex':'none';}
+async function loadCases(){const data=await request('/cases');cases=data.cases||[];renderMetrics();renderTable();if(selectedCase) selectCase(selectedCase.caseId);}
+$('loginBtn').onclick=async()=>{try{$('authMessage').className='info';$('authMessage').textContent='Signing in...';await request(cfg[role].endpoint,{method:'POST',body:JSON.stringify({username:$('username').value,password:$('password').value})});$('authCard').style.display='none';$('portalView').style.display='grid';$('authMessage').textContent='';await loadCases();}catch(e){$('authMessage').className='error';$('authMessage').textContent=e.message;}};
+$('refreshBtn').onclick=()=>loadCases().catch(e=>{$('updateMsg').className='error';$('updateMsg').textContent=e.message;});
+$('logoutBtn').onclick=()=>{selectedCase=null;cases=[];$('portalView').style.display='none';$('authCard').style.display='block';$('detailPane').innerHTML='<p>Select a case to review details.</p>';$('updateMsg').textContent='';};
+document.querySelectorAll('[data-status]').forEach(btn=>btn.onclick=async()=>{if(!selectedCase) return; try{$('updateMsg').className='info';$('updateMsg').textContent='Saving...';const updated=await request(`/cases/${encodeURIComponent(selectedCase.caseId)}`,{method:'PATCH',body:JSON.stringify({status:btn.dataset.status,assignedOfficer:'socialworker',assignedTo:'socialworker',note:btn.dataset.status==='Resolved'?'Case resolved by social worker.':'Case moved into active social worker review.'})});cases=cases.map(c=>c.caseId===updated.caseId?updated:c);selectedCase=updated;renderMetrics();renderTable();selectCase(updated.caseId);$('updateMsg').textContent=`Case ${updated.caseId} updated to ${updated.status}.`;}catch(e){$('updateMsg').className='error';$('updateMsg').textContent=e.message;}});
+$('tab-admin').onclick=()=>setRole('admin');$('tab-worker').onclick=()=>setRole('worker'); setRole('admin');
+</script>
+</body></html>

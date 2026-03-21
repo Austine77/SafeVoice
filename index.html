@@ -1,0 +1,4164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SAFE VOICE</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
+
+    :root {
+      --bg: #0b2440;
+      --surface: #123f73;
+      --surface-2: #184a82;
+      --surface-3: #082647;
+      --text: #f5f7fa;
+      --muted: #d6e2f0;
+      --muted-2: #b8c7d9;
+      --line: rgba(255,255,255,0.12);
+      --primary: #d4a63a;
+      --primary-2: #bf922d;
+      --teal: #1e5fa8;
+      --danger: #cf5d68;
+      --success: #2d8f5f;
+      --warning: #dd9b2d;
+      --shadow: 0 18px 45px rgba(0, 0, 0, 0.24);
+      --radius-xl: 26px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: "Poppins", Arial, sans-serif;
+      background: linear-gradient(180deg, #0b2440 0%, #102f57 45%, #082647 100%);
+      color: var(--text);
+    }
+
+    h1, h2, h3, h4, h5, h6, button, input, textarea, .pill, .badge, .step, .nav-btn {
+      font-family: "Poppins", Arial, sans-serif;
+    }
+
+    .app-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+    }
+
+    .sidebar {
+      background: linear-gradient(180deg, #082647 0%, #061c34 100%);
+      color: #fff;
+      padding: 28px 22px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      z-index: 20;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
+
+    .mobile-topbar {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      padding: 14px 16px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 18px;
+      background: rgba(8,38,71,0.72);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 14px 32px rgba(0,0,0,0.18);
+    }
+
+    .mobile-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .mobile-brand strong {
+      display: block;
+      color: var(--text);
+      font-size: 15px;
+      letter-spacing: 0.04em;
+    }
+
+    .mobile-brand span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .menu-toggle {
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.48);
+      z-index: 15;
+    }
+
+    body.menu-open {
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    body.menu-open .sidebar {
+      touch-action: pan-y;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-mark {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--primary), #f2cb6d);
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      box-shadow: 0 10px 24px rgba(212, 166, 58, 0.35);
+    }
+
+    .brand h1 {
+      font-size: 20px;
+      line-height: 1.1;
+      margin: 0;
+      letter-spacing: 0.04em;
+    }
+
+    .brand p {
+      margin: 4px 0 0;
+      font-size: 12px;
+      color: rgba(255,255,255,0.78);
+    }
+
+    .sidebar-note {
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      border-radius: 18px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.88);
+      line-height: 1.6;
+    }
+
+    .nav-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: rgba(255,255,255,0.58);
+      margin: 0 0 4px;
+    }
+
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow: auto;
+      padding-right: 6px;
+    }
+
+    .nav-btn {
+      border: 0;
+      text-align: left;
+      background: transparent;
+      color: #f5f7fa;
+      padding: 12px 14px;
+      border-radius: 14px;
+      cursor: pointer;
+      font: inherit;
+      transition: 0.25s ease;
+    }
+
+    .nav-btn:hover,
+    .nav-btn.active {
+      background: rgba(255,255,255,0.12);
+      transform: translateX(2px);
+    }
+
+    .content {
+      padding: 26px;
+    }
+
+    .nav-btn[data-requires-unlock="true"] {
+      display: none;
+    }
+
+    body.user-unlocked .nav-btn[data-requires-unlock="true"] {
+      display: block;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .headline h2 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.1;
+      color: var(--text);
+    }
+
+    .headline p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      background: rgba(212,166,58,0.12);
+      color: #f9d77a;
+      border: 1px solid rgba(212,166,58,0.28);
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .quick-exit {
+      border: 0;
+      background: var(--danger);
+      color: rgba(18,63,115,0.96) ;
+      padding: 12px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 700;
+      box-shadow: 0 12px 24px rgba(207, 93, 104, 0.25);
+    }
+
+    .screen { display: none; }
+    .screen.active {
+      display: block;
+      animation: fade 0.25s ease;
+    }
+
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .grid { display: grid; gap: 18px; }
+    .grid-2 { grid-template-columns: 1.2fr 0.8fr; }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .card {
+      background: linear-gradient(180deg, rgba(18,63,115,0.96) 0%, rgba(15,56,103,0.98) 100%);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .card h3, .card h4 {
+      margin: 0 0 10px;
+      color: var(--text);
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #082647 0%, #0a2e57 55%, #123f73 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -40px;
+      top: -40px;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(212,166,58,0.18) 0%, rgba(212,166,58,0) 70%);
+      pointer-events: none;
+    }
+
+    .cta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .cta-card {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .cta-card:hover { transform: translateY(-2px); }
+    .cta-card strong { display: block; margin-bottom: 6px; color: var(--text); }
+    .cta-card span { color: var(--muted); font-size: 14px; line-height: 1.45; }
+
+    .stats { display: grid; gap: 14px; }
+
+    .stat {
+      padding: 18px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(24,74,130,0.96) 0%, rgba(18,63,115,0.98) 100%);
+      border: 1px solid var(--line);
+      color: var(--muted);
+    }
+
+    .stat b {
+      display: block;
+      font-size: 28px;
+      margin-bottom: 5px;
+      color: var(--text);
+    }
+
+    .stepper {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .step {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .step.current {
+      background: rgba(212,166,58,0.12);
+      color: #f5d377;
+      border-color: rgba(212,166,58,0.28);
+    }
+
+    .option-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .option {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      border-radius: 16px;
+      padding: 15px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .radio {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-radius: 50%;
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .option.selected .radio::after {
+      content: "";
+      position: absolute;
+      inset: 3px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+
+    .option.selected {
+      border-color: rgba(212,166,58,0.45);
+      background: rgba(212,166,58,0.08);
+    }
+
+    textarea, input {
+      width: 100%;
+      padding: 14px 15px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.06);
+      font: inherit;
+      color: var(--text);
+    }
+
+    input::placeholder,
+    textarea::placeholder { color: var(--muted-2); }
+    textarea { min-height: 150px; resize: vertical; }
+
+    .upload-grid, .resource-grid, .analytics-grid, .support-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+    .upload-box, .resource-item, .analytic, .support-card {
+      border: 1px dashed rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.04);
+      border-radius: 18px;
+      padding: 18px;
+      color: var(--muted);
+    }
+
+    .upload-box strong, .resource-item strong, .analytic strong, .support-card strong { color: var(--text); }
+    .support-card { border-style: solid; background: rgba(255,255,255,0.05); }
+
+    .button-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 14px;
+      padding: 13px 16px;
+      cursor: pointer;
+      font-weight: 700;
+      font: inherit;
+      transition: 0.2s ease;
+    }
+
+    .btn:hover, .cta-card:hover, .nav-btn:hover, .key:hover { filter: brightness(1.06); }
+    .btn-primary { background: var(--primary); color: #082647; }
+    .btn-secondary { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid var(--line); }
+    .btn-teal { background: var(--teal); color: #fff; }
+    .btn-danger { background: var(--danger); color: #fff; }
+
+    .case-id {
+      font-size: 34px;
+      letter-spacing: 0.08em;
+      font-weight: 800;
+      color: #f5c85b;
+      margin: 10px 0;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .badge.review { background: rgba(221,155,45,0.18); color: #ffd979; }
+    .badge.assigned { background: rgba(30,95,168,0.22); color: #d9ebff; }
+    .badge.safe { background: rgba(45,143,95,0.18); color: #d7ffe9; }
+    .badge.alert { background: rgba(207,93,104,0.18); color: #ffd9de; }
+
+    .timeline {
+      position: relative;
+      padding-left: 22px;
+      margin-top: 14px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 7px;
+      top: 6px;
+      bottom: 6px;
+      width: 2px;
+      background: rgba(212,166,58,0.8);
+    }
+
+    .timeline-item {
+      position: relative;
+      padding: 0 0 18px 12px;
+      color: var(--muted);
+    }
+
+    .timeline-item::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--primary);
+      position: absolute;
+      left: -20px;
+      top: 6px;
+    }
+
+    .chat-box {
+      background: linear-gradient(180deg, rgba(8,38,71,0.94) 0%, rgba(18,63,115,0.94) 100%);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .msg {
+      max-width: 74%;
+      padding: 13px 15px;
+      border-radius: 18px;
+      line-height: 1.5;
+      color: var(--text);
+    }
+
+    .msg.sw {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--line);
+    }
+
+    .msg.you {
+      background: rgba(212,166,58,0.12);
+      margin-left: auto;
+    }
+
+    .map {
+      height: 260px;
+      border-radius: 22px;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px) 0 0/38px 38px,
+        linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px) 0 0/38px 38px,
+        linear-gradient(135deg, #123f73 0%, #184a82 45%, #0a2e57 100%);
+      border: 1px solid var(--line);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .map-pin {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      background: var(--primary);
+    }
+
+    .map-pin::after {
+      content: "";
+      width: 8px;
+      height: 8px;
+      background: rgba(18,63,115,0.96);
+      border-radius: 50%;
+      position: absolute;
+      top: 5px;
+      left: 5px;
+    }
+
+    .chips {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 14px 0 0;
+    }
+
+    .chip {
+      padding: 9px 13px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--line);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    th { background: rgba(255,255,255,0.05); color: var(--muted); font-weight: 700; }
+
+    .calculator {
+      width: 100%;
+      max-width: 420px;
+      margin: 0 auto;
+      background: linear-gradient(180deg, rgba(8,38,71,0.96) 0%, rgba(18,63,115,0.96) 100%);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .display {
+      height: 92px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: end;
+      justify-content: end;
+      padding: 18px;
+      font-size: 38px;
+      font-weight: 700;
+      color: #5b2a86;
+    }
+
+    .keys {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .key {
+      border: 0;
+      border-radius: 18px;
+      padding: 18px 0;
+      background: rgba(255,255,255,0.06);
+      font-size: 22px;
+      cursor: pointer;
+      color: var(--text);
+      transition: 0.2s ease;
+    }
+
+    .key.op { background: rgba(212,166,58,0.16); color: #ffd979; }
+    .muted-small { color: var(--muted); font-size: 13px; margin-top: 10px; }
+
+    @media (max-width: 980px) {
+      .app-shell { grid-template-columns: 1fr; }
+      .mobile-topbar { display: flex; }
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: min(320px, 88vw);
+        height: 100vh;
+        max-height: 100vh;
+        transform: translateX(-104%);
+        transition: transform 0.28s ease;
+        box-shadow: 0 24px 44px rgba(0,0,0,0.32);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      body.menu-open .sidebar { transform: translateX(0); }
+      body.menu-open .sidebar-overlay { display: block; }
+      .content { padding: 16px; }
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 16px;
+      }
+      .headline h2 { font-size: 24px; }
+      .grid-2, .grid-3, .cta-grid { grid-template-columns: 1fr; }
+      .card { padding: 18px; border-radius: 22px; }
+      .case-id { font-size: 28px; }
+      .msg { max-width: 88%; }
+      .actions { width: 100%; justify-content: space-between; }
+    }
+
+    @media (min-width: 981px) {
+      .sidebar-overlay { display: none !important; }
+    }
+
+    
+
+/* Icons page color update: navy icons, white background, purple SafeVoice bar */
+#home,
+#home .screen-shell,
+#home .wf-top,
+#home .wf-copy,
+#home .wf-icons,
+#home .wf-icon-wrap {
+  background: #ffffff !important;
+  color: #172033 !important;
+}
+
+#home .home-brand-header {
+  background: #5b2a86 !important;
+  border: 1px solid rgba(91,42,134,0.22) !important;
+  box-shadow: 0 12px 28px rgba(91,42,134,0.16) !important;
+}
+
+#home .home-brand-title {
+  color: #ffffff !important;
+}
+
+#globalExitTopbar.quick-exit {
+  background: #ffffff !important;
+  color: #0b1f5e !important;
+  border: 2px solid #0b1f5e !important;
+  box-shadow: 0 10px 22px rgba(11,31,94,0.10) !important;
+}
+
+#home .wf-icon,
+#home .wf-icon:hover,
+#home .wf-icon:focus,
+#home .wf-icon:active {
+  background: #0b1f5e !important;
+  color: #ffffff !important;
+  border: 1px solid #0b1f5e !important;
+  box-shadow: 0 10px 22px rgba(11,31,94,0.18) !important;
+}
+
+#home .icon-label {
+  color: #ffffff !important;
+}
+
+#home .icon-image svg rect,
+#home .icon-image svg path,
+#home .icon-image svg circle {
+  stroke: #ffffff !important;
+}
+
+#home .icon-image svg rect:first-child {
+  fill: rgba(255,255,255,0.10) !important;
+}
+
+@media (max-width: 640px) {
+      .topbar { gap: 12px; }
+      .actions { gap: 8px; }
+      .pill, .quick-exit { width: 100%; justify-content: center; text-align: center; }
+      .button-row .btn { width: 100%; }
+      .calculator { padding: 16px; border-radius: 24px; }
+      .display { height: 84px; font-size: 32px; }
+      th, td { padding: 12px; font-size: 13px; }
+    }
+  
+    /* Wireframe-exact home layout override */
+    body {
+      background: #d7d7d7 !important;
+      color: #000 !important;
+      min-height: 100vh;
+    }
+    .app-shell {
+      display: block !important;
+      max-width: 100% !important;
+    }
+    .sidebar,
+    .mobile-topbar,
+    .topbar {
+      display: none !important;
+    }
+    .content {
+      padding: 10px !important;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .screen { display: none; }
+    .screen.active { display: block; width: 100%; }
+    #entry.screen.active,
+    #home.screen.active { max-width: 310px; }
+    #home {
+      width: 100%;
+    }
+    .wireframe-phone {
+      width: 100%;
+      background: #ececec;
+      border: 2px solid #2a2a2a;
+      border-radius: 34px;
+      overflow: hidden;
+      box-shadow: none;
+      color: #000;
+    }
+    .wf-row {
+      display: grid;
+      align-items: center;
+      border-bottom: 1.5px solid #686868;
+    }
+    .wf-top {
+      grid-template-columns: 68px 1fr 68px;
+      gap: 6px;
+      padding: 8px 8px 4px;
+      min-height: 54px;
+    }
+    .wf-circle,
+    .wf-icon {
+      border: 1.5px solid #2b2b2b;
+      background: #fff;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #000;
+      line-height: 1.05;
+    }
+    .wf-circle {
+      width: 58px;
+      height: 58px;
+      font-size: 12px;
+      padding: 4px;
+      margin: 0 auto;
+      font-weight: 500;
+    }
+    .wf-brand {
+      text-align: center;
+      line-height: 1.05;
+    }
+    .wf-brand .safevoice {
+      display: inline-block;
+      font-size: 22px;
+      font-weight: 800;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      margin-bottom: 2px;
+    }
+    .wf-brand .home {
+      display: block;
+      font-size: 19px;
+      font-weight: 800;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .wf-hero {
+      padding: 8px 14px;
+      text-align: center;
+      border-bottom: 1.5px solid #686868;
+    }
+    .wf-hero h2 {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.15;
+      font-weight: 800;
+    }
+    .wf-copy {
+      padding: 8px 12px;
+      text-align: center;
+      border-bottom: 1.5px solid #686868;
+      font-size: 11px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+    .wf-icons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      row-gap: 10px;
+      column-gap: 4px;
+      padding: 10px 8px 8px;
+      border-bottom: 1.5px solid #686868;
+    }
+    .wf-icon-wrap {
+      display: flex;
+      justify-content: center;
+    }
+    .wf-icon {
+      width: 62px;
+      height: 62px;
+      padding: 6px;
+      font-size: 10px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease;
+      user-select: none;
+    }
+    .wf-icon:hover,
+    .wf-icon:focus {
+      transform: scale(1.03);
+      background: #f7f7f7;
+      outline: none;
+    }
+    .wf-features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1.5px solid #686868;
+    }
+    .wf-feature {
+      min-height: 88px;
+      padding: 6px 8px 8px;
+      text-align: center;
+      border-right: 1.5px solid #686868;
+    }
+    .wf-feature:last-child { border-right: 0; }
+    .wf-feature h3,
+    .wf-track h3 {
+      margin: 0 0 4px;
+      font-size: 17px;
+      font-weight: 800;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      color: #ffffff;
+    }
+    .wf-feature p,
+    .wf-track p {
+      margin: 0;
+      font-size: 11px;
+      line-height: 1.35;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .wf-track {
+      padding: 6px 10px 8px;
+      text-align: center;
+      border-bottom: 1.5px solid #686868;
+    }
+    .wf-copyright {
+      padding: 6px 12px;
+      text-align: center;
+      border-bottom: 1.5px solid #686868;
+      font-size: 11px;
+      line-height: 1.25;
+    }
+    .wf-socials {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      padding: 8px 0 10px;
+    }
+    .wf-social {
+      width: 28px;
+      height: 24px;
+      border: 1.5px solid #2b2b2b;
+      background: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #000;
+      text-decoration: none;
+    }
+
+    .wireframe-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.42);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 1000;
+    }
+    .wireframe-modal.open { display: flex; }
+    .wireframe-modal-card {
+      width: min(92vw, 360px);
+      background: #fff;
+      border: 2px solid #2b2b2b;
+      border-radius: 20px;
+      padding: 18px 16px;
+      color: #000;
+      text-align: center;
+      box-shadow: 0 16px 40px rgba(0,0,0,.2);
+    }
+    .wireframe-modal-card h3 {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+    .wireframe-modal-card p {
+      margin: 0 0 14px;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .wireframe-modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .wireframe-btn {
+      border: 1.5px solid #2b2b2b;
+      background: #fff;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .wireframe-btn.primary {
+      background: #111;
+      color: #fff;
+    }
+    .screen:not(#home) {
+      max-width: 760px;
+      width: 100%;
+    }
+    .card, .hero, .stats, .stat {
+      background: #fff !important;
+      color: #000 !important;
+      border: 1px solid #bbb !important;
+      box-shadow: none !important;
+    }
+    .quick-exit {
+      background: #111 !important;
+      color: #fff !important;
+      border: 1px solid #111 !important;
+    }
+
+
+    /* Deploy-ready full-width color override */
+    body {
+      background: linear-gradient(180deg, #4b1f74 0%, #2b3fae 52%, #102a7a 100%) !important;
+      color: #ffffff !important;
+      min-height: 100vh;
+    }
+    .content {
+      padding: 0 !important;
+      display: block !important;
+      width: 100% !important;
+    }
+    .screen.active,
+    #home.screen.active,
+    .screen:not(#home) {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+    #home {
+      padding: 0 !important;
+    }
+    .wireframe-phone {
+      width: 100% !important;
+      max-width: 100% !important;
+      min-height: 100vh;
+      border: 0 !important;
+      border-radius: 0 !important;
+      background: linear-gradient(180deg, #5e239d 0%, #3949c6 52%, #17318f 100%) !important;
+      color: #fff !important;
+      box-shadow: none !important;
+    }
+    .wf-row,
+    .wf-hero,
+    .wf-copy,
+    .wf-icons,
+    .wf-features,
+    .wf-track,
+    .wf-copyright {
+      border-color: rgba(255,255,255,0.28) !important;
+    }
+    .wf-circle,
+    .wf-icon,
+    .wf-social,
+    .wireframe-btn {
+      background: rgba(255,255,255,0.10) !important;
+      border: 1.5px solid rgba(255,255,255,0.65) !important;
+      color: #fff !important;
+      backdrop-filter: blur(6px);
+    }
+    .wf-icon:hover,
+    .wf-icon:focus,
+    .wireframe-btn:hover {
+      background: rgba(255,255,255,0.18) !important;
+    }
+    .wf-brand .safevoice,
+    .wf-brand .home,
+    .wf-feature h3,
+    .wf-track h3,
+    .wf-hero h2,
+    .wf-copy,
+    .wf-feature p,
+    .wf-track p,
+    .wf-copyright,
+    .wf-social,
+    .wireframe-modal-card h3,
+    .wireframe-modal-card p {
+      color: #fff !important;
+      font-weight: 800 !important;
+    }
+    .wireframe-modal {
+      background: rgba(7, 11, 34, 0.70) !important;
+    }
+    .wireframe-modal-card {
+      background: linear-gradient(180deg, #5e239d 0%, #3949c6 52%, #17318f 100%) !important;
+      border: 1.5px solid rgba(255,255,255,0.65) !important;
+      color: #fff !important;
+    }
+    .wireframe-btn.primary {
+      background: #ffffff !important;
+      color: #18265f !important;
+      border-color: #ffffff !important;
+    }
+    .card, .hero, .stats, .stat, .upload-box, .resource-item, .analytic, .support-card, table, th, td {
+      background: linear-gradient(180deg, rgba(94,35,157,0.96) 0%, rgba(57,73,198,0.96) 54%, rgba(23,49,143,0.98) 100%) !important;
+      color: #ffffff !important;
+      border: 1px solid rgba(255,255,255,0.22) !important;
+      box-shadow: none !important;
+    }
+    .card h1, .card h2, .card h3, .card h4, .card p,
+    .hero h1, .hero h2, .hero h3, .hero p,
+    .stat, .stat strong, .stat span,
+    th, td, label, .muted, .muted-small, .badge,
+    .headline h2, .headline p {
+      color: #ffffff !important;
+      font-weight: 700 !important;
+    }
+    .btn, .quick-exit, .pill, .nav-btn, .key {
+      font-weight: 800 !important;
+    }
+    .quick-exit,
+    .btn-primary,
+    .btn-secondary,
+    .btn-teal,
+    .btn-danger {
+      background: rgba(255,255,255,0.12) !important;
+      color: #ffffff !important;
+      border: 1px solid rgba(255,255,255,0.45) !important;
+    }
+    input, textarea, select {
+      background: rgba(255,255,255,0.10) !important;
+      color: #ffffff !important;
+      border: 1px solid rgba(255,255,255,0.35) !important;
+      font-weight: 700 !important;
+    }
+    input::placeholder,
+    textarea::placeholder {
+      color: rgba(255,255,255,0.82) !important;
+    }
+    @media (max-width: 640px) {
+      .wf-top { grid-template-columns: 72px 1fr 72px; }
+      .wf-brand .safevoice { font-size: 20px; }
+      .wf-brand .home { font-size: 18px; }
+      .wf-hero h2 { font-size: 18px; }
+      .wf-copy, .wf-feature p, .wf-track p, .wf-copyright { font-size: 12px; }
+      .wf-icon { width: 72px; height: 72px; font-size: 11px; }
+      .wf-circle { width: 62px; height: 62px; }
+    }
+
+  
+    /* Professional dashboard upgrade */
+    :root {
+      --dashboard-grad-1: #6a2de2;
+      --dashboard-grad-2: #3559da;
+      --dashboard-grad-3: #14358f;
+      --glass: rgba(255,255,255,0.10);
+      --glass-2: rgba(255,255,255,0.14);
+      --glass-border: rgba(255,255,255,0.26);
+    }
+    .content {
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+    .screen {
+      min-height: 100vh;
+      padding: 0;
+    }
+    .screen.active {
+      display: block;
+    }
+    .screen-shell {
+      min-height: 100vh;
+      padding: 20px;
+      background:
+        radial-gradient(circle at top right, rgba(255,255,255,0.10), transparent 24%),
+        linear-gradient(180deg, var(--dashboard-grad-1) 0%, var(--dashboard-grad-2) 52%, var(--dashboard-grad-3) 100%);
+    }
+    .screen-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin: 18px 0 0;
+      padding: 12px 14px;
+      border-radius: 22px;
+      background: rgba(9, 14, 55, 0.26);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 12px 28px rgba(4, 7, 32, 0.18);
+    }
+    .screen-nav-left,
+    .screen-nav-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .screen-nav-title {
+      color: #fff;
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: 0.02em;
+    }
+    .screen-nav-btn {
+      min-width: 96px;
+      border: 1px solid rgba(255,255,255,0.38);
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease;
+    }
+    .screen-nav-btn:hover,
+    .screen-nav-btn:focus {
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.18);
+      outline: none;
+    }
+    .screen-nav-btn.primary {
+      background: #fff;
+      color: #1f2e86;
+      border-color: #fff;
+    }
+
+    .screen-quick-exit-wrap {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .screen-home-btn,
+    .screen-quick-exit-btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 16px;
+      color: #fff;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .screen-home-btn {
+      background: linear-gradient(135deg, #233f8f, #182b68);
+      box-shadow: 0 12px 24px rgba(24, 43, 104, 0.22);
+    }
+
+    .screen-quick-exit-btn {
+      background: linear-gradient(135deg, #cf5d68, #b94753);
+      box-shadow: 0 12px 24px rgba(185, 71, 83, 0.24);
+    }
+
+    .screen-quick-exit-btn:hover,
+    .screen-quick-exit-btn:focus {
+      transform: translateY(-1px);
+      filter: brightness(1.03);
+    }
+
+    .screen-nav-btn.ghost {
+      background: transparent;
+    }
+
+    .wireframe-phone {
+      background:
+        radial-gradient(circle at 10% 0%, rgba(255,255,255,0.14), transparent 18%),
+        linear-gradient(180deg, #6827cb 0%, #435ce7 54%, #17318f 100%) !important;
+    }
+    .wf-top,
+    .wf-hero,
+    .wf-copy,
+    .wf-icons,
+    .wf-features,
+    .wf-track,
+    .wf-copyright,
+    .wf-socials {
+      padding-left: 18px;
+      padding-right: 18px;
+    }
+    .wf-top {
+      min-height: 92px;
+      padding-top: 18px;
+      padding-bottom: 16px;
+    }
+    .wf-circle {
+      width: 72px;
+      height: 72px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.14) !important;
+      font-size: 12px;
+      font-weight: 800;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+    }
+    .wf-brand .safevoice {
+      font-size: 28px;
+      text-decoration: none;
+      margin-bottom: 6px;
+    }
+    .wf-brand .home {
+      font-size: 20px;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+    .home-brand-header {
+      padding: 26px 18px 16px;
+      text-align: center;
+      border-bottom: 1.5px solid rgba(255,255,255,0.28);
+    }
+    .home-brand-title {
+      margin: 0;
+      color: #fff;
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+    }
+    .home-search-wrap {
+      padding: 16px 18px 20px;
+      border-bottom: 1.5px solid rgba(255,255,255,0.28);
+    }
+    .home-search-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 62px;
+      padding: 0 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.12);
+      border: 1.5px solid rgba(255,255,255,0.32);
+      box-shadow: 0 12px 24px rgba(6,8,28,0.12);
+    }
+    .home-search-icon {
+      font-size: 18px;
+      line-height: 1;
+      color: rgba(255,255,255,0.92);
+      flex: 0 0 auto;
+    }
+    .home-search-input {
+      width: 100%;
+      border: 0 !important;
+      background: transparent !important;
+      color: #fff !important;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 0 !important;
+      outline: none;
+      box-shadow: none !important;
+    }
+    .home-search-input::placeholder {
+      color: rgba(255,255,255,0.86) !important;
+    }
+    .wf-icons.is-filtered .wf-icon-wrap[hidden] {
+      display: none !important;
+    }
+    .wf-hero h2 {
+      font-size: 29px;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+    .wf-copy {
+      font-size: 15px;
+      line-height: 1.55;
+      color: rgba(255,255,255,0.96) !important;
+    }
+    .wf-icons {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px 14px;
+      padding-top: 20px;
+      padding-bottom: 22px;
+    }
+    .wf-icon-wrap {
+      min-width: 0;
+    }
+    .wf-icon {
+      width: 100%;
+      min-height: 124px;
+      height: auto;
+      padding: 16px 10px 14px;
+      border-radius: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      text-align: center;
+      background: linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.10) 100%) !important;
+      box-shadow: 0 14px 30px rgba(8, 10, 33, 0.18);
+    }
+    .wf-icon:hover,
+    .wf-icon:focus {
+      transform: translateY(-2px) scale(1.01);
+    }
+    .icon-image {
+      width: 58px;
+      height: 58px;
+      margin: 0 auto;
+      display: block;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,0.18));
+    }
+    .icon-image svg {
+      width: 58px;
+      height: 58px;
+      display: block;
+    }
+    .icon-label {
+      display: block;
+      color: #fff;
+      font-weight: 800;
+      font-size: 12px;
+      line-height: 1.35;
+      letter-spacing: 0.01em;
+      min-height: 34px;
+    }
+    .wf-feature,
+    .wf-track {
+      background: rgba(255,255,255,0.08);
+    }
+    .wf-feature {
+      padding-top: 14px;
+      padding-bottom: 14px;
+      min-height: 120px;
+    }
+    .wf-feature h3,
+    .wf-track h3 {
+      font-size: 20px;
+      text-decoration: none;
+      margin-bottom: 8px;
+    }
+    .wf-feature p,
+    .wf-track p {
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .wf-copyright {
+      font-size: 13px;
+      line-height: 1.5;
+      font-weight: 800;
+      padding-top: 16px;
+      padding-bottom: 14px;
+    }
+    .wf-socials {
+      padding-top: 16px;
+      padding-bottom: 24px;
+      gap: 12px;
+    }
+    .wf-social {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .card, .hero, .stats, .stat, .upload-box, .resource-item, .analytic, .support-card, table {
+      border-radius: 28px !important;
+      box-shadow: 0 18px 42px rgba(6,8,28,0.18) !important;
+      overflow: hidden;
+    }
+    .card {
+      padding: 26px !important;
+    }
+    .card h3 {
+      font-size: 24px !important;
+      margin-bottom: 8px !important;
+      letter-spacing: -0.01em;
+    }
+    .card p, .card li, td, th, label {
+      font-size: 14px !important;
+      line-height: 1.7 !important;
+    }
+    .btn, .quick-exit, .pill, .nav-btn, .key, .chip, .badge {
+      border-radius: 14px !important;
+    }
+    .button-row {
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      min-height: 48px;
+      padding: 12px 18px !important;
+      font-size: 14px !important;
+      letter-spacing: 0.01em;
+    }
+
+    @media (max-width: 900px) {
+      .screen-shell {
+        padding: 14px;
+      }
+      .wf-icons {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .screen-nav {
+        padding: 10px 12px;
+      }
+      .screen-nav-btn {
+        min-width: 84px;
+        padding: 10px 12px;
+      }
+      .wf-hero h2 {
+        font-size: 24px;
+      }
+    }
+    @media (max-width: 560px) {
+      .screen-shell {
+        padding: 10px;
+      }
+      .screen-nav {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .screen-nav-left, .screen-nav-right {
+        justify-content: space-between;
+      }
+      .wf-top,
+      .wf-hero,
+      .wf-copy,
+      .wf-icons,
+      .wf-features,
+      .wf-track,
+      .wf-copyright,
+      .wf-socials {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+      .wf-top {
+        grid-template-columns: 70px 1fr 70px;
+        gap: 8px;
+      }
+      .wf-circle {
+        width: 64px;
+        height: 64px;
+      }
+      .wf-brand .safevoice {
+        font-size: 24px;
+      }
+      .wf-brand .home {
+        font-size: 18px;
+      }
+      .wf-hero h2 {
+        font-size: 20px;
+      }
+      .wf-copy {
+        font-size: 13px;
+      }
+      .wf-icons {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .wf-icon {
+        min-height: 116px;
+        border-radius: 20px;
+      }
+      .icon-label {
+        font-size: 11px;
+      }
+      .wf-features {
+        grid-template-columns: 1fr;
+      }
+      .wf-feature {
+        border-right: 0;
+        border-bottom: 1px solid rgba(255,255,255,0.2);
+      }
+      .wf-feature:last-child {
+        border-bottom: 0;
+      }
+    }
+
+
+
+  /* Final professional purple-white-lavender theme override */
+  :root {
+    --bg: #4c1d95;
+    --surface: #6d28d9;
+    --surface-2: #7c3aed;
+    --surface-3: #4338ca;
+    --text: #ffffff;
+    --muted: #f3f4ff;
+    --muted-2: #e9ddff;
+    --line: rgba(255,255,255,0.24);
+    --primary: #ffffff;
+    --primary-2: #ede9fe;
+    --teal: #8b5cf6;
+    --danger: #7c3aed;
+    --success: #a78bfa;
+    --warning: #c4b5fd;
+    --shadow: 0 20px 44px rgba(45, 27, 105, 0.28);
+    --dashboard-grad-1: #6d28d9;
+    --dashboard-grad-2: #4f46e5;
+    --dashboard-grad-3: #7c3aed;
+    --glass: rgba(255,255,255,0.14);
+    --glass-2: rgba(255,255,255,0.18);
+    --glass-border: rgba(255,255,255,0.30);
+  }
+
+  body {
+    background:
+      radial-gradient(circle at top left, rgba(255,255,255,0.10), transparent 24%),
+      linear-gradient(180deg, #6d28d9 0%, #4f46e5 48%, #7c3aed 100%) !important;
+    color: #ffffff !important;
+  }
+
+  .wireframe-phone,
+  .screen-shell,
+  .card,
+  .hero,
+  .stat,
+  .upload-box,
+  .resource-item,
+  .analytic,
+  .support-card,
+  table,
+  th,
+  td,
+  .calculator,
+  .chat-box,
+  .map,
+  .home-search-box,
+  .screen-nav,
+  .wireframe-modal-card {
+    background:
+      linear-gradient(180deg, rgba(109,40,217,0.96) 0%, rgba(79,70,229,0.96) 50%, rgba(124,58,237,0.98) 100%) !important;
+    color: #ffffff !important;
+    border-color: rgba(255,255,255,0.24) !important;
+    box-shadow: 0 18px 40px rgba(45, 27, 105, 0.24) !important;
+  }
+
+  .wf-feature,
+  .wf-track,
+  .cta-card,
+  .option,
+  .chip,
+  .msg.sw,
+  .msg.you,
+  .display,
+  .wf-circle,
+  .wf-icon,
+  .wf-social,
+  .wireframe-btn,
+  .key,
+  .btn,
+  .quick-exit,
+  .pill,
+  .nav-btn,
+  input,
+  textarea {
+    background: rgba(255,255,255,0.12) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255,255,255,0.26) !important;
+    box-shadow: none !important;
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-teal,
+  .btn-danger,
+  .quick-exit,
+  .screen-nav-btn,
+  .wireframe-btn.primary {
+    background: #ffffff !important;
+    color: #4c1d95 !important;
+    border: 1px solid #ffffff !important;
+    font-weight: 800 !important;
+  }
+
+  .screen-nav-btn.ghost {
+    background: rgba(255,255,255,0.12) !important;
+    color: #ffffff !important;
+    border-color: rgba(255,255,255,0.26) !important;
+  }
+
+  h1, h2, h3, h4, h5, h6,
+  p, span, strong, label, li, td, th,
+  .headline h2, .headline p,
+  .wf-brand .safevoice, .wf-brand .home,
+  .home-brand-title, .wf-hero h2, .wf-copy,
+  .wf-feature h3, .wf-feature p,
+  .wf-track h3, .wf-track p,
+  .wf-copyright, .icon-label,
+  .case-id, .muted-small, .badge {
+    color: #ffffff !important;
+  }
+
+  p, li, td, th, label, .wf-copy, .wf-feature p, .wf-track p, .muted-small, .icon-label {
+    font-weight: 700 !important;
+    line-height: 1.65 !important;
+  }
+
+  h1, h2, h3, h4, h5, h6, .home-brand-title, .wf-feature h3, .wf-track h3, .case-id {
+    font-weight: 800 !important;
+    letter-spacing: -0.01em;
+  }
+
+  input::placeholder,
+  textarea::placeholder,
+  .home-search-input::placeholder {
+    color: rgba(255,255,255,0.92) !important;
+    font-weight: 700 !important;
+  }
+
+  .home-search-input {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+  }
+
+  .wf-row,
+  .wf-hero,
+  .wf-copy,
+  .wf-icons,
+  .wf-features,
+  .wf-track,
+  .wf-copyright {
+    border-color: rgba(255,255,255,0.22) !important;
+  }
+
+
+
+/* Master-degree navy white purple accessibility override */
+:root {
+  --master-navy: #0b1f5e;
+  --master-navy-2: #10286f;
+  --master-white: #ffffff;
+  --master-purple: #efe9ff;
+  --master-purple-2: #e4d8ff;
+  --master-purple-3: #d8c7ff;
+  --master-text: #172033;
+  --master-text-soft: #344056;
+  --master-line: rgba(11,31,94,0.12);
+  --master-shadow: 0 16px 36px rgba(17, 31, 78, 0.10);
+}
+
+html, body {
+  background: var(--master-white) !important;
+  color: var(--master-text) !important;
+}
+
+body,
+.content,
+.screen,
+.screen-shell,
+#home,
+.wireframe-phone {
+  background: var(--master-white) !important;
+  color: var(--master-text) !important;
+}
+
+/* Top areas */
+.sidebar,
+.mobile-topbar,
+.topbar,
+.home-brand-header,
+.screen-nav,
+.wf-top,
+.wf-hero {
+  background: var(--master-navy) !important;
+  color: #ffffff !important;
+  border-color: rgba(255,255,255,0.14) !important;
+  box-shadow: none !important;
+}
+
+.brand h1,
+.brand p,
+.mobile-brand strong,
+.mobile-brand span,
+.headline h2,
+.headline p,
+.screen-nav-title,
+.wf-hero h2,
+.home-brand-title,
+.nav-title {
+  color: #ffffff !important;
+}
+
+/* Footer areas */
+.wf-track,
+.wf-copyright,
+.wf-socials {
+  background: var(--master-navy) !important;
+  color: #ffffff !important;
+  border-color: rgba(255,255,255,0.14) !important;
+}
+
+.wf-track h3,
+.wf-track p,
+.wf-copyright,
+.wf-social,
+.wf-socials a {
+  color: #ffffff !important;
+}
+
+.screen:not(#home) .screen-shell::after {
+  content: "© 2026 SAFE VOICE. All rights reserved.";
+  display: block;
+  margin-top: 22px;
+  padding: 18px 20px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #ffffff;
+  background: var(--master-navy);
+  border-radius: 22px;
+}
+
+/* Main containers */
+.card,
+.hero,
+.stat,
+.upload-box,
+.resource-item,
+.analytic,
+.support-card,
+.chat-box,
+.map,
+.calculator,
+.home-search-box,
+.wf-feature,
+.wf-icon,
+.wf-circle,
+.option,
+.msg.sw,
+.msg.you,
+.display,
+.wireframe-modal-card,
+table,
+th,
+td {
+  background: var(--master-purple) !important;
+  color: var(--master-text) !important;
+  border: 1px solid var(--master-line) !important;
+  box-shadow: var(--master-shadow) !important;
+}
+
+/* Home icon grid container stays white for cleaner contrast */
+.wf-icons,
+.wireframe-phone,
+.screen-shell,
+.content {
+  border-color: var(--master-line) !important;
+}
+
+/* Text clarity */
+h1, h2, h3, h4, h5, h6,
+p, span, strong, label, li, td, th,
+.card h1, .card h2, .card h3, .card h4, .card p,
+.hero h1, .hero h2, .hero h3, .hero p,
+.stat, .stat b,
+.option, .chip, .badge, .muted-small,
+.wf-copy, .wf-feature h3, .wf-feature p, .icon-label,
+.case-id {
+  color: var(--master-text) !important;
+}
+
+p, span, label, li, td, th, .wf-copy, .wf-feature p, .icon-label, .muted-small {
+  font-weight: 700 !important;
+}
+
+h1, h2, h3, h4, h5, h6, .case-id, .wf-feature h3, .wf-track h3, .home-brand-title {
+  font-weight: 800 !important;
+}
+
+.wf-copy {
+  background: #ffffff !important;
+  color: var(--master-text) !important;
+}
+
+/* Buttons */
+.btn,
+.quick-exit,
+.screen-nav-btn,
+.wireframe-btn,
+.key,
+.menu-toggle,
+.nav-btn,
+.wf-social,
+.pill,
+.chip,
+.badge,
+.cta-card {
+  font-weight: 800 !important;
+}
+
+.btn-primary,
+.btn-teal,
+.btn-danger,
+.quick-exit,
+.screen-quick-exit-btn,
+.screen-nav-btn.primary,
+.wireframe-btn.primary,
+.menu-toggle,
+.wf-social,
+.pill {
+  background: var(--master-navy) !important;
+  color: #ffffff !important;
+  border: 1px solid var(--master-navy) !important;
+  box-shadow: none !important;
+}
+
+.btn-secondary,
+.screen-nav-btn.ghost,
+.wireframe-btn,
+.key,
+.nav-btn,
+.chip,
+.cta-card {
+  background: #ffffff !important;
+  color: var(--master-navy) !important;
+  border: 1px solid rgba(11,31,94,0.18) !important;
+  box-shadow: none !important;
+}
+
+.nav-btn.active,
+.nav-btn:hover,
+.cta-card:hover,
+.key:hover,
+.wf-icon:hover,
+.wf-icon:focus,
+.screen-nav-btn:hover,
+.wireframe-btn:hover {
+  background: var(--master-purple-2) !important;
+  color: var(--master-navy) !important;
+}
+
+/* Inputs */
+input, textarea, select, .home-search-input {
+  background: #ffffff !important;
+  color: var(--master-text) !important;
+  border: 1.5px solid rgba(11,31,94,0.18) !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+}
+input::placeholder,
+textarea::placeholder,
+.home-search-input::placeholder {
+  color: #667085 !important;
+  font-weight: 700 !important;
+}
+
+/* Home icons */
+.wf-icon {
+  min-height: 124px;
+}
+.icon-label {
+  color: var(--master-text) !important;
+}
+.icon-image svg rect,
+.icon-image svg path,
+.icon-image svg circle {
+  stroke: var(--master-navy) !important;
+}
+.icon-image svg rect:first-child {
+  fill: rgba(11,31,94,0.06) !important;
+}
+
+/* Home feature cards remain light purple, footer stays navy */
+.wf-feature {
+  background: var(--master-purple) !important;
+}
+
+/* Make table headers slightly darker */
+th {
+  background: var(--master-purple-2) !important;
+}
+
+/* Remove previous gradient-heavy shadows */
+.card, .hero, .stat, .upload-box, .resource-item, .analytic, .support-card, table, .calculator, .chat-box, .map {
+  box-shadow: var(--master-shadow) !important;
+}
+
+
+
+/* Refined navy container / deep-purple brand / light-pink icon override */
+:root {
+  --sv-navy: #0b1f5e;
+  --sv-navy-2: #10286f;
+  --sv-deep-purple: #4b1f7a;
+  --sv-white: #ffffff;
+  --sv-light-pink: #ffd8ea;
+  --sv-light-pink-2: #ffe6f1;
+  --sv-text-dark: #172033;
+  --sv-line-soft: rgba(255,255,255,0.14);
+}
+
+html, body,
+body,
+.content,
+.screen,
+.screen-shell,
+#home,
+.wireframe-phone {
+  background: #ffffff !important;
+  color: var(--sv-text-dark) !important;
+}
+
+/* Keep top and footer navy */
+.sidebar,
+.mobile-topbar,
+.topbar,
+.home-brand-header,
+.screen-nav,
+.wf-top,
+.wf-hero,
+.wf-track,
+.wf-copyright,
+.wf-socials {
+  background: var(--sv-navy) !important;
+  color: #ffffff !important;
+  border-color: var(--sv-line-soft) !important;
+}
+
+/* SafeVoice brand */
+.home-brand-title,
+.brand h1,
+.nav-title,
+.screen-nav-title {
+  color: var(--sv-deep-purple) !important;
+  font-weight: 900 !important;
+}
+.home-brand-header .home-brand-title,
+.wf-top .home-brand-title,
+.mobile-topbar .home-brand-title,
+.topbar .home-brand-title,
+.home-brand-header .brand h1,
+.mobile-topbar .brand h1,
+.topbar .brand h1,
+.screen-nav .screen-nav-title {
+  color: #ffffff !important;
+}
+.home-brand-mark,
+.brand-mark,
+.logo-mark,
+.home-brand-icon {
+  color: var(--sv-deep-purple) !important;
+}
+
+/* All main containers navy with bold white text */
+.card,
+.hero,
+.stat,
+.upload-box,
+.resource-item,
+.analytic,
+.support-card,
+.chat-box,
+.map,
+.calculator,
+.home-search-box,
+.wf-feature,
+.wf-circle,
+.option,
+.msg.sw,
+.msg.you,
+.display,
+.wireframe-modal-card,
+table,
+th,
+td,
+.screen-shell::after,
+.screen:not(#home) .screen-shell::after {
+  background: var(--sv-navy) !important;
+  color: #ffffff !important;
+  border: 1px solid var(--sv-line-soft) !important;
+  box-shadow: 0 14px 32px rgba(11,31,94,0.16) !important;
+}
+
+.card *, .hero *, .stat *, .upload-box *, .resource-item *, .analytic *,
+.support-card *, .chat-box *, .map *, .calculator *, .home-search-box *,
+.wf-feature *, .option *, .wireframe-modal-card *, table *, th *, td * {
+  color: #ffffff !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 800 !important;
+}
+p, span, strong, label, li, td, th, .wf-copy, .wf-feature p, .icon-label, .muted-small {
+  font-weight: 700 !important;
+}
+
+/* Keep inputs readable */
+input, textarea, select, .home-search-input {
+  background: #ffffff !important;
+  color: var(--sv-text-dark) !important;
+  border: 1.5px solid rgba(11,31,94,0.18) !important;
+  font-weight: 700 !important;
+}
+input::placeholder,
+textarea::placeholder,
+.home-search-input::placeholder {
+  color: #667085 !important;
+}
+
+/* Light pink home icons */
+.wf-icon,
+.wf-icon:hover,
+.wf-icon:focus,
+.wf-icon:active {
+  background: var(--sv-light-pink) !important;
+  color: var(--sv-deep-purple) !important;
+  border: 1px solid rgba(75,31,122,0.16) !important;
+}
+.icon-label {
+  color: var(--sv-deep-purple) !important;
+  font-weight: 800 !important;
+}
+.icon-image svg rect,
+.icon-image svg path,
+.icon-image svg circle {
+  stroke: var(--sv-deep-purple) !important;
+}
+.icon-image svg rect:first-child {
+  fill: var(--sv-light-pink-2) !important;
+}
+
+/* Buttons */
+.btn-primary,
+.btn-teal,
+.btn-danger,
+.quick-exit,
+.screen-quick-exit-btn,
+.screen-nav-btn.primary,
+.wireframe-btn.primary,
+.menu-toggle,
+.wf-social,
+.pill {
+  background: var(--sv-deep-purple) !important;
+  color: #ffffff !important;
+  border: 1px solid var(--sv-deep-purple) !important;
+}
+.btn-secondary,
+.screen-nav-btn.ghost,
+.wireframe-btn,
+.key,
+.nav-btn,
+.chip,
+.cta-card {
+  background: #ffffff !important;
+  color: var(--sv-navy) !important;
+  border: 1px solid rgba(11,31,94,0.18) !important;
+}
+
+
+/* Typography increase and stronger boldness update */
+.home-brand-title {
+  font-size: 42px !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.02em;
+}
+
+.wf-hero h2 {
+  font-size: 34px !important;
+  font-weight: 900 !important;
+  line-height: 1.2 !important;
+}
+
+.wf-copy,
+.card p,
+.hero p,
+.stat,
+.option,
+label,
+li,
+td,
+th,
+.muted-small,
+.icon-label,
+.wf-feature p,
+.wf-track p,
+.wf-copyright {
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  line-height: 1.7 !important;
+}
+
+.card h1, .card h2, .card h3, .card h4,
+.hero h1, .hero h2, .hero h3,
+.wf-feature h3,
+.wf-track h3,
+.headline h2,
+.screen-nav-title,
+.brand h1 {
+  font-size: 28px !important;
+  font-weight: 900 !important;
+  line-height: 1.2 !important;
+}
+
+.nav-btn,
+.btn,
+.quick-exit,
+.screen-nav-btn,
+.wireframe-btn,
+.key,
+.pill {
+  font-size: 15px !important;
+  font-weight: 900 !important;
+}
+
+input, textarea, select, .home-search-input {
+  font-size: 16px !important;
+  font-weight: 800 !important;
+}
+
+@media (max-width: 900px) {
+  .home-brand-title { font-size: 36px !important; }
+  .wf-hero h2 { font-size: 28px !important; }
+  .card h1, .card h2, .card h3, .card h4,
+  .hero h1, .hero h2, .hero h3,
+  .wf-feature h3,
+  .wf-track h3,
+  .headline h2 { font-size: 24px !important; }
+}
+
+@media (max-width: 560px) {
+  .home-brand-title { font-size: 32px !important; }
+  .wf-hero h2 { font-size: 24px !important; }
+  .wf-copy,
+  .card p,
+  .hero p,
+  .stat,
+  .option,
+  label,
+  li,
+  td,
+  th,
+  .muted-small,
+  .icon-label,
+  .wf-feature p,
+  .wf-track p,
+  .wf-copyright { font-size: 15px !important; }
+}
+
+.sidebar-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px 16px;
+  width: 100%;
+}
+
+.sidebar-brand {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.sidebar-brand h1 {
+  margin: 0;
+  color: #ffffff !important;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.sidebar-note {
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+  color: #ffffff !important;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.6;
+  text-align: center;
+}
+
+
+/* Final SafeVoice centering fix */
+.sidebar-header {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  gap: 12px !important;
+  width: 100% !important;
+  padding: 20px 16px !important;
+}
+.sidebar-header .brand-mark {
+  margin: 0 auto !important;
+  flex: 0 0 auto;
+}
+.sidebar-brand {
+  width: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+.sidebar-brand h1,
+.sidebar h1,
+.brand h1 {
+  margin: 0 !important;
+  color: #ffffff !important;
+  text-align: center !important;
+}
+.sidebar-note {
+  width: 100% !important;
+  max-width: 320px !important;
+  margin: 0 auto !important;
+  color: #ffffff !important;
+  text-align: center !important;
+}
+#entry .hero {
+  text-align: center !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 28px 20px !important;
+}
+#entry .hero .entry-brand-title {
+  margin: 0 0 12px !important;
+  width: 100% !important;
+  text-align: center !important;
+  color: #ffffff !important;
+  font-size: 42px !important;
+  font-weight: 900 !important;
+  line-height: 1.1 !important;
+}
+#entry .hero .entry-brand-copy {
+  margin: 0 !important;
+  width: 100% !important;
+  max-width: 980px !important;
+  text-align: center !important;
+  color: #ffffff !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  line-height: 1.6 !important;
+}
+
+
+
+/* FINAL READABILITY FIX — keep calculator and icons page dark, make all other screens readable */
+.screen:not(#entry):not(#home) {
+  background: #f6f8ff !important;
+  color: #172033 !important;
+}
+
+.screen:not(#entry):not(#home) .screen-shell {
+  background: #ffffff !important;
+  color: #172033 !important;
+}
+
+.screen:not(#entry):not(#home) .hero,
+.screen:not(#entry):not(#home) .card,
+.screen:not(#entry):not(#home) .stat,
+.screen:not(#entry):not(#home) .upload-box,
+.screen:not(#entry):not(#home) .resource-item,
+.screen:not(#entry):not(#home) .analytic,
+.screen:not(#entry):not(#home) .support-card,
+.screen:not(#entry):not(#home) .chat-box,
+.screen:not(#entry):not(#home) .map,
+.screen:not(#entry):not(#home) .option,
+.screen:not(#entry):not(#home) .msg.sw,
+.screen:not(#entry):not(#home) .msg.you,
+.screen:not(#entry):not(#home) table,
+.screen:not(#entry):not(#home) td,
+.screen:not(#entry):not(#home) .screen-shell::after {
+  background: #eef2ff !important;
+  color: #172033 !important;
+  border: 1px solid rgba(15, 23, 42, 0.10) !important;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08) !important;
+}
+
+.screen:not(#entry):not(#home) th {
+  background: #172554 !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+}
+
+.screen:not(#entry):not(#home) h1,
+.screen:not(#entry):not(#home) h2,
+.screen:not(#entry):not(#home) h3,
+.screen:not(#entry):not(#home) h4,
+.screen:not(#entry):not(#home) h5,
+.screen:not(#entry):not(#home) h6,
+.screen:not(#entry):not(#home) strong,
+.screen:not(#entry):not(#home) label,
+.screen:not(#entry):not(#home) .case-id,
+.screen:not(#entry):not(#home) .headline h2,
+.screen:not(#entry):not(#home) .card h1,
+.screen:not(#entry):not(#home) .card h2,
+.screen:not(#entry):not(#home) .card h3,
+.screen:not(#entry):not(#home) .card h4 {
+  color: #0f1e4d !important;
+  font-weight: 800 !important;
+}
+
+.screen:not(#entry):not(#home) p,
+.screen:not(#entry):not(#home) span,
+.screen:not(#entry):not(#home) li,
+.screen:not(#entry):not(#home) td,
+.screen:not(#entry):not(#home) .muted,
+.screen:not(#entry):not(#home) .wf-copy,
+.screen:not(#entry):not(#home) .headline p,
+.screen:not(#entry):not(#home) .muted-small,
+.screen:not(#entry):not(#home) .badge:not(.safe):not(.assigned):not(.review):not(.alert) {
+  color: #24324a !important;
+  font-weight: 700 !important;
+}
+
+.screen:not(#entry):not(#home) .badge.safe,
+.screen:not(#entry):not(#home) .badge.assigned,
+.screen:not(#entry):not(#home) .badge.review,
+.screen:not(#entry):not(#home) .badge.alert {
+  color: #ffffff !important;
+}
+
+.screen:not(#entry):not(#home) input,
+.screen:not(#entry):not(#home) textarea,
+.screen:not(#entry):not(#home) select,
+.screen:not(#entry):not(#home) .home-search-input {
+  background: #ffffff !important;
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+  caret-color: #111827 !important;
+  border: 1.5px solid rgba(15, 23, 42, 0.16) !important;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+  font-weight: 700 !important;
+}
+
+.screen:not(#entry):not(#home) input::placeholder,
+.screen:not(#entry):not(#home) textarea::placeholder,
+.screen:not(#entry):not(#home) .home-search-input::placeholder {
+  color: #667085 !important;
+}
+
+.screen:not(#entry):not(#home) .btn-primary,
+.screen:not(#entry):not(#home) .btn-teal,
+.screen:not(#entry):not(#home) .btn-danger,
+.screen:not(#entry):not(#home) .screen-nav-btn,
+.screen:not(#entry):not(#home) .wireframe-btn.primary {
+  background: #172554 !important;
+  color: #ffffff !important;
+  border: 1px solid #172554 !important;
+}
+
+.screen:not(#entry):not(#home) .btn-secondary,
+.screen:not(#entry):not(#home) .wireframe-btn,
+.screen:not(#entry):not(#home) .quick-exit,
+.screen:not(#entry):not(#home) .pill {
+  background: #5b21b6 !important;
+  color: #ffffff !important;
+  border: 1px solid #5b21b6 !important;
+}
+
+/* Keep the PIN modal readable */
+#pinModal .wireframe-modal-card {
+  background: #132a74 !important;
+  color: #ffffff !important;
+}
+#pinModal .wireframe-modal-card h3,
+#pinModal .wireframe-modal-card p {
+  color: #ffffff !important;
+}
+#pinModalInput {
+  background: #ffffff !important;
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+  caret-color: #111827 !important;
+  border: 2px solid rgba(15, 23, 42, 0.22) !important;
+  text-shadow: none !important;
+}
+#pinModalInput::placeholder {
+  color: #667085 !important;
+}
+#pinModal .wireframe-btn {
+  background: #ffffff !important;
+  color: #132a74 !important;
+  border: 1px solid #ffffff !important;
+}
+#pinModal .wireframe-btn.primary {
+  background: #6b21a8 !important;
+  color: #ffffff !important;
+  border: 1px solid #6b21a8 !important;
+}
+
+
+  /* Icons page feature text visibility fix */
+  .wf-features .wf-feature h3,
+  .wf-features .wf-feature p {
+    color: #ffffff !important;
+  }
+
+/* Footer social links upgrade */
+.wf-socials {
+  display: flex !important;
+  justify-content: center !important;
+  gap: 12px !important;
+  flex-wrap: wrap;
+}
+.wf-social.wf-social-link {
+  width: auto !important;
+  min-width: 132px;
+  height: auto !important;
+  border-radius: 999px !important;
+  padding: 10px 14px !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.12) !important;
+  border: 1px solid rgba(255,255,255,0.22) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  text-decoration: none !important;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+}
+.wf-social-icon {
+  width: 24px;
+  height: 24px;
+  display: block;
+  border-radius: 50%;
+  flex: 0 0 24px;
+}
+.wf-social.wf-social-link span {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.02em;
+}
+
+
+
+/* Icons page app menu + restricted access icons */
+#home .home-brand-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+#home .home-app-menu-wrap {
+  position:relative;
+  flex:0 0 auto;
+}
+#home .home-app-menu-toggle {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  min-width:54px;
+  height:54px;
+  padding:0 18px;
+  border:none;
+  border-radius:18px;
+  background:linear-gradient(135deg,#172d7a,#5e239d);
+  color:#ffffff;
+  font-size:20px;
+  font-weight:800;
+  box-shadow:0 16px 34px rgba(8,16,56,0.28);
+  cursor:pointer;
+}
+#home .home-app-menu-toggle:focus-visible,
+#home .home-app-menu-link:focus-visible {
+  outline:3px solid rgba(255,255,255,0.72);
+  outline-offset:3px;
+}
+#home .home-app-menu-panel {
+  position:absolute;
+  top:66px;
+  right:0;
+  width:min(290px,78vw);
+  padding:14px;
+  border-radius:22px;
+  background:rgba(10,22,73,0.98);
+  border:1px solid rgba(255,255,255,0.16);
+  box-shadow:0 22px 46px rgba(3,10,35,0.34);
+  display:none;
+  z-index:50;
+}
+#home .home-app-menu-panel.is-open {
+  display:block;
+}
+#home .home-app-menu-title {
+  margin:0 0 10px;
+  color:#ffffff;
+  font-size:14px;
+  font-weight:800;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+}
+#home .home-app-menu-links {
+  display:grid;
+  gap:10px;
+}
+#home .home-app-menu-link {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  width:100%;
+  padding:12px 14px;
+  border:none;
+  border-radius:16px;
+  background:rgba(255,255,255,0.08);
+  color:#ffffff;
+  font-size:14px;
+  font-weight:800;
+  text-align:left;
+  cursor:pointer;
+}
+#home .home-app-menu-link small {
+  display:block;
+  color:rgba(255,255,255,0.74);
+  font-size:11px;
+  font-weight:700;
+  margin-top:3px;
+}
+#home .home-app-menu-link .menu-lock {
+  color:#d8c7ff;
+  font-size:16px;
+  flex:0 0 auto;
+}
+#home .home-app-menu-links--staff {
+  gap:12px;
+}
+#home .home-app-menu-link--staff {
+  align-items:center;
+  gap:14px;
+  min-height:72px;
+  padding:14px 16px;
+}
+#home .home-app-menu-link-icon {
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  background:rgba(255,255,255,0.14);
+  border:1px solid rgba(255,255,255,0.14);
+  font-size:22px;
+  flex:0 0 auto;
+}
+#home .home-app-menu-link-copy {
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  flex:1 1 auto;
+}
+
+#home .wf-icon.is-restricted {
+  position:relative;
+  overflow:hidden;
+}
+#home .wf-icon.is-restricted::after {
+  content:'Restricted';
+  position:absolute;
+  top:10px;
+  right:10px;
+  padding:4px 8px;
+  border-radius:999px;
+  background:rgba(255,255,255,0.16);
+  border:1px solid rgba(255,255,255,0.18);
+  color:#ffffff;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:0.04em;
+  text-transform:uppercase;
+}
+#home .wf-restricted-note {
+  margin-top:18px;
+  padding:14px 16px;
+  border-radius:18px;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.1);
+  color:#ffffff;
+  font-size:14px;
+  font-weight:700;
+  line-height:1.55;
+}
+#home .wf-restricted-note strong {
+  color:#ffffff;
+}
+@media (max-width: 640px) {
+  #home .home-brand-header {
+    align-items:flex-start;
+  }
+  #home .home-app-menu-toggle {
+    min-width:48px;
+    height:48px;
+    padding:0 15px;
+    border-radius:16px;
+  }
+  #home .home-app-menu-panel {
+    top:58px;
+    width:min(260px,82vw);
+  }
+}
+
+
+
+/* FINAL NATURAL SITE THEME — leave calculator/home and icons page unchanged */
+.screen:not(#entry):not(#home) {
+  background: #f5f5f4 !important;
+  color: #1f2937 !important;
+}
+
+.screen:not(#entry):not(#home) .screen-shell {
+  background: #fafaf9 !important;
+  color: #1f2937 !important;
+  border: 1px solid rgba(41, 37, 36, 0.08) !important;
+  box-shadow: 0 14px 34px rgba(28, 25, 23, 0.06) !important;
+}
+
+.screen:not(#entry):not(#home) .hero,
+.screen:not(#entry):not(#home) .card,
+.screen:not(#entry):not(#home) .stat,
+.screen:not(#entry):not(#home) .upload-box,
+.screen:not(#entry):not(#home) .resource-item,
+.screen:not(#entry):not(#home) .analytic,
+.screen:not(#entry):not(#home) .support-card,
+.screen:not(#entry):not(#home) .chat-box,
+.screen:not(#entry):not(#home) .map,
+.screen:not(#entry):not(#home) .option,
+.screen:not(#entry):not(#home) .msg.sw,
+.screen:not(#entry):not(#home) .msg.you,
+.screen:not(#entry):not(#home) table,
+.screen:not(#entry):not(#home) td,
+.screen:not(#entry):not(#home) .screen-shell::after {
+  background: #ffffff !important;
+  color: #1f2937 !important;
+  border: 1px solid rgba(41, 37, 36, 0.10) !important;
+  box-shadow: 0 10px 24px rgba(28, 25, 23, 0.05) !important;
+}
+
+.screen:not(#entry):not(#home) th,
+.screen:not(#entry):not(#home) .table-head,
+.screen:not(#entry):not(#home) thead td {
+  background: #1f3a5f !important;
+  color: #ffffff !important;
+  border-color: rgba(31, 58, 95, 0.22) !important;
+}
+
+.screen:not(#entry):not(#home) h1,
+.screen:not(#entry):not(#home) h2,
+.screen:not(#entry):not(#home) h3,
+.screen:not(#entry):not(#home) h4,
+.screen:not(#entry):not(#home) h5,
+.screen:not(#entry):not(#home) h6,
+.screen:not(#entry):not(#home) strong,
+.screen:not(#entry):not(#home) label,
+.screen:not(#entry):not(#home) .case-id,
+.screen:not(#entry):not(#home) .headline h2,
+.screen:not(#entry):not(#home) .card h1,
+.screen:not(#entry):not(#home) .card h2,
+.screen:not(#entry):not(#home) .card h3,
+.screen:not(#entry):not(#home) .card h4 {
+  color: #111827 !important;
+  font-weight: 800 !important;
+}
+
+.screen:not(#entry):not(#home) p,
+.screen:not(#entry):not(#home) span,
+.screen:not(#entry):not(#home) li,
+.screen:not(#entry):not(#home) td,
+.screen:not(#entry):not(#home) .muted,
+.screen:not(#entry):not(#home) .wf-copy,
+.screen:not(#entry):not(#home) .headline p,
+.screen:not(#entry):not(#home) .muted-small,
+.screen:not(#entry):not(#home) .badge:not(.safe):not(.assigned):not(.review):not(.alert) {
+  color: #374151 !important;
+  font-weight: 700 !important;
+}
+
+.screen:not(#entry):not(#home) a {
+  color: #1d4ed8 !important;
+}
+
+.screen:not(#entry):not(#home) input,
+.screen:not(#entry):not(#home) textarea,
+.screen:not(#entry):not(#home) select,
+.screen:not(#entry):not(#home) .home-search-input {
+  background: #ffffff !important;
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+  caret-color: #111827 !important;
+  border: 1.5px solid rgba(55, 65, 81, 0.20) !important;
+  box-shadow: none !important;
+  font-weight: 700 !important;
+}
+
+.screen:not(#entry):not(#home) input::placeholder,
+.screen:not(#entry):not(#home) textarea::placeholder,
+.screen:not(#entry):not(#home) .home-search-input::placeholder {
+  color: #6b7280 !important;
+}
+
+.screen:not(#entry):not(#home) .btn-primary,
+.screen:not(#entry):not(#home) .btn-teal,
+.screen:not(#entry):not(#home) .btn-danger,
+.screen:not(#entry):not(#home) .screen-nav-btn,
+.screen:not(#entry):not(#home) .wireframe-btn.primary,
+.screen:not(#entry):not(#home) .screen-home-btn {
+  background: #1f3a5f !important;
+  color: #ffffff !important;
+  border: 1px solid #1f3a5f !important;
+}
+
+.screen:not(#entry):not(#home) .btn-secondary,
+.screen:not(#entry):not(#home) .wireframe-btn,
+.screen:not(#entry):not(#home) .quick-exit,
+.screen:not(#entry):not(#home) .pill,
+.screen:not(#entry):not(#home) .screen-quick-exit-btn {
+  background: #6d28d9 !important;
+  color: #ffffff !important;
+  border: 1px solid #6d28d9 !important;
+}
+
+
+
+/* OPTION SELECTION CLARITY FIX */
+.screen:not(#entry):not(#home) .option {
+  background: #ffffff !important;
+  color: #1e2b45 !important;
+  border: 2px solid #d7deea !important;
+}
+
+.screen:not(#entry):not(#home) .option span:last-child {
+  color: #1e2b45 !important;
+  font-weight: 800 !important;
+}
+
+.screen:not(#entry):not(#home) .option .radio {
+  width: 24px !important;
+  height: 24px !important;
+  border: 3px solid #7c3aed !important;
+  background: #ffffff !important;
+  box-shadow: inset 0 0 0 2px #ffffff !important;
+}
+
+.screen:not(#entry):not(#home) .option.selected {
+  background: #f4efff !important;
+  border-color: #7c3aed !important;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.14) !important;
+}
+
+.screen:not(#entry):not(#home) .option.selected .radio {
+  border-color: #6d28d9 !important;
+  background: #ffffff !important;
+}
+
+.screen:not(#entry):not(#home) .option.selected .radio::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 4px !important;
+  border-radius: 50% !important;
+  background: #6d28d9 !important;
+}
+
+
+/* GLOBAL INTERACTIVE CLARITY FIX ACROSS ALL INNER PAGES */
+.screen:not(#entry):not(#home) .option,
+.screen:not(#entry):not(#home) .chip,
+.screen:not(#entry):not(#home) .resource-item,
+.screen:not(#entry):not(#home) .support-card,
+.screen:not(#entry):not(#home) .card,
+.screen:not(#entry):not(#home) .analytic,
+.screen:not(#entry):not(#home) .upload-box,
+.screen:not(#entry):not(#home) table tr {
+  transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+
+.screen:not(#entry):not(#home) .option {
+  position: relative !important;
+  min-height: 78px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  padding: 18px 22px !important;
+  border-radius: 22px !important;
+  background: #ffffff !important;
+  border: 2px solid #d7deea !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+}
+
+.screen:not(#entry):not(#home) .option:hover {
+  background: #f8fbff !important;
+  border-color: #93a4bf !important;
+}
+
+.screen:not(#entry):not(#home) .option span:last-child {
+  flex: 1 !important;
+  font-size: 16px !important;
+  line-height: 1.45 !important;
+  letter-spacing: 0 !important;
+  color: #1e2b45 !important;
+  font-weight: 800 !important;
+}
+
+.screen:not(#entry):not(#home) .option .radio {
+  flex: 0 0 26px !important;
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 50% !important;
+  border: 3px solid #5b6f92 !important;
+  background: #ffffff !important;
+  position: relative !important;
+  display: inline-block !important;
+  box-shadow: inset 0 0 0 2px #ffffff !important;
+}
+
+.screen:not(#entry):not(#home) .option.selected {
+  background: #eef4ff !important;
+  border-color: #1f3a5f !important;
+  box-shadow: 0 0 0 4px rgba(31, 58, 95, 0.12) !important;
+}
+
+.screen:not(#entry):not(#home) .option.selected span:last-child {
+  color: #14233b !important;
+}
+
+.screen:not(#entry):not(#home) .option.selected .radio {
+  border-color: #1f3a5f !important;
+  background: #ffffff !important;
+}
+
+.screen:not(#entry):not(#home) .option.selected .radio::after {
+  content: "" !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  width: 12px !important;
+  height: 12px !important;
+  transform: translate(-50%, -50%) !important;
+  border-radius: 50% !important;
+  background: #1f3a5f !important;
+}
+
+.screen:not(#entry):not(#home) input,
+.screen:not(#entry):not(#home) textarea,
+.screen:not(#entry):not(#home) select {
+  color: #16243a !important;
+  background: #ffffff !important;
+  border: 2px solid #cfd8e5 !important;
+  font-weight: 700 !important;
+}
+
+.screen:not(#entry):not(#home) input::placeholder,
+.screen:not(#entry):not(#home) textarea::placeholder {
+  color: #667892 !important;
+  opacity: 1 !important;
+  font-weight: 700 !important;
+}
+
+.screen:not(#entry):not(#home) input:focus,
+.screen:not(#entry):not(#home) textarea:focus,
+.screen:not(#entry):not(#home) select:focus,
+.screen:not(#entry):not(#home) .option:focus-within,
+.screen:not(#entry):not(#home) button:focus-visible,
+.screen:not(#entry):not(#home) .chip:focus-visible {
+  outline: none !important;
+  border-color: #1f3a5f !important;
+  box-shadow: 0 0 0 4px rgba(31, 58, 95, 0.14) !important;
+}
+
+.screen:not(#entry):not(#home) .chip {
+  background: #edf2fb !important;
+  color: #1f3a5f !important;
+  border: 1px solid #c7d3e5 !important;
+  font-weight: 800 !important;
+}
+
+.screen:not(#entry):not(#home) .resource-item strong,
+.screen:not(#entry):not(#home) .support-card strong,
+.screen:not(#entry):not(#home) th,
+.screen:not(#entry):not(#home) td,
+.screen:not(#entry):not(#home) label,
+.screen:not(#entry):not(#home) p,
+.screen:not(#entry):not(#home) h2,
+.screen:not(#entry):not(#home) h3 {
+  color: #1e2b45 !important;
+}
+
+.screen:not(#entry):not(#home) table tbody tr:hover {
+  background: #f6f9ff !important;
+}
+
+</style>
+</head>
+<body>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-mark">🛡</div>
+        <div class="sidebar-brand">
+          <h1>SAFE VOICE</h1>
+        </div>
+        <div class="sidebar-note">
+          Private reporting, support, and case-tracking platform designed for safe access, anonymous reporting, emergency help, and staff response workflows.
+        </div>
+      </div>
+
+      <div>
+        <p class="nav-title">Main Menu</p>
+        <div class="nav-list" id="navList">
+          <button class="nav-btn active" data-screen="entry">Home</button>
+          <button class="nav-btn" data-screen="report1" data-requires-unlock="true">Report Abuse</button>
+          <button class="nav-btn" data-screen="tracking" data-requires-unlock="true">Track My Case</button>
+          <button class="nav-btn" data-screen="chat" data-requires-unlock="true">Secure Support Chat</button>
+          <button class="nav-btn" data-screen="emergency" data-requires-unlock="true">Emergency Help</button>
+          <button class="nav-btn" data-screen="support" data-requires-unlock="true">Find Support</button>
+          <button class="nav-btn" data-screen="resources" data-requires-unlock="true">Learn Your Rights</button>
+
+        </div>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="mobile-topbar">
+        <div class="mobile-brand">
+          <div class="brand-mark" style="width:42px;height:42px;border-radius:14px;font-size:20px;flex:0 0 auto;">🛡</div>
+          <div>
+            <strong>SAFE VOICE</strong>
+            <span>Private reporting and support app</span>
+          </div>
+        </div>
+        <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false" aria-controls="navList">☰</button>
+      </div>
+      <div class="topbar">
+        <div class="headline">
+          <h2 id="screenTitle">Home</h2>
+          <p id="screenDesc">Calculator access home screen with 4-digit PIN protection.</p>
+        </div>
+        <div class="actions">
+          <span class="pill"></span>
+          <button class="quick-exit" id="globalExitTopbar">Quick Exit</button>
+        </div>
+      </div>
+
+      <section class="screen active" id="entry">
+        <div class="card hero">
+          <h3 class="entry-brand-title">SafeVoice</h3>
+        </div>
+        <div class="card" style="margin-top:18px;">
+          <div class="calculator">
+            <div class="display" id="calcDisplay">0</div>
+            <div class="keys">
+              <button class="key op" data-calc-action="clear">C</button><button class="key op" data-calc-action="delete">DEL</button><button class="key op" data-calc-value="÷">÷</button><button class="key op" data-calc-value="×">×</button>
+              <button class="key" data-calc-value="7">7</button><button class="key" data-calc-value="8">8</button><button class="key" data-calc-value="9">9</button><button class="key op" data-calc-value="−">−</button>
+              <button class="key" data-calc-value="4">4</button><button class="key" data-calc-value="5">5</button><button class="key" data-calc-value="6">6</button><button class="key op" data-calc-value="+">+</button>
+              <button class="key" data-calc-value="1">1</button><button class="key" data-calc-value="2">2</button><button class="key" data-calc-value="3">3</button><button class="key op" data-calc-action="equals">=</button>
+              <button class="key" data-calc-value="0" style="grid-column: span 2;">0</button><button class="key" data-calc-value=".">.</button><button class="key op" data-calc-action="pin">PIN</button>
+            </div>
+            <div class="muted-small" id="calcHint">Use the calculator normally. Enter a 4-digit PIN and press = to unlock the icons page.</div>
+            <div class="button-row" style="margin-top:14px;">
+              <button class="btn btn-secondary" type="button" id="setPinBtn">Create / Change 4-Digit PIN</button>
+              <button class="btn btn-secondary" type="button" id="clearPinBtn">Remove PIN</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      
+      <section class="screen" id="home">
+        <div class="wireframe-phone">
+          <div class="home-brand-header">
+            <h1 class="home-brand-title">SafeVoice</h1>
+          </div>
+
+          <div class="wf-icons" id="homeIconGrid">
+            <div class="wf-icon-wrap"><button class="wf-icon" data-icon-key="report" data-icon-screen="report1" data-icon-title="Report Abuse" data-icon-detail="Start a calm, step-by-step reporting flow for survivors."></button></div>
+            <div class="wf-icon-wrap"><button class="wf-icon" data-icon-key="emergency" data-icon-screen="emergency" data-icon-title="Emergency Help" data-icon-detail="Open urgent support actions fast when immediate help is needed."></button></div>
+            <div class="wf-icon-wrap"><button class="wf-icon" data-icon-key="support" data-icon-screen="support" data-icon-title="Find Support" data-icon-detail="Find nearby support services, shelters, hospitals, and legal aid."></button></div>
+
+            <div class="wf-icon-wrap"><button class="wf-icon" data-icon-key="rights" data-icon-screen="resources" data-icon-title="Learn Your Rights" data-icon-detail="Read simple rights, safety guidance, and support information."></button></div>
+            <div class="wf-icon-wrap"><button class="wf-icon" data-icon-key="track" data-icon-screen="tracking" data-icon-title="Track My Case" data-icon-detail="Check your case status privately with your unique case ID and latest progress."></button></div>
+
+            <div class="wf-icon-wrap"><button class="wf-icon" data-icon-key="chat" data-icon-screen="chat" data-icon-title="Secure Support Chat" data-icon-detail="Message a support worker in a protected, survivor-first chat."></button></div>
+          </div>
+
+          <div class="wf-features">
+            <div class="wf-feature">
+              <h3>Quick Exit</h3>
+              <p>Visible across the<br>experience<br>for safe disengagement.</p>
+            </div>
+            <div class="wf-feature">
+              <h3>Anonymous</h3>
+              <p>Identity hidden by default<br>unless the user chooses to<br>share contact details.</p>
+            </div>
+          </div>
+
+          <div class="wf-track">
+            <h3>Case Tracking</h3>
+            <p>Unique case ID allows updates<br>without exposing the survivor.</p>
+          </div>
+
+          <div class="wf-copyright">© 2026 Abuse Report Platform. All rights<br>reserved.</div>
+
+          <div class="wf-socials">
+            <a class="wf-social wf-social-link" href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+              <img class="wf-social-icon" alt="" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='18' fill='%23ffffff'/><path d='M37 18h7v9h-5c-2 0-3 1-3 3v5h8l-1 9h-7v18h-9V44h-6v-9h6v-6c0-7 4-11 10-11z' fill='%2314266d'/></svg>">
+              <span>Facebook</span>
+            </a>
+            <a class="wf-social wf-social-link" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+              <img class="wf-social-icon" alt="" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='18' fill='%23ffffff'/><rect x='12' y='18' width='40' height='28' rx='10' fill='%23b30f54'/><path d='M29 25l12 7-12 7z' fill='%23ffffff'/></svg>">
+              <span>YouTube</span>
+            </a>
+            <a class="wf-social wf-social-link" href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <img class="wf-social-icon" alt="" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='18' fill='%23ffffff'/><rect x='16' y='16' width='32' height='32' rx='10' fill='none' stroke='%23631f9b' stroke-width='4'/><circle cx='32' cy='32' r='8' fill='none' stroke='%23631f9b' stroke-width='4'/><circle cx='42.5' cy='21.5' r='3' fill='%23631f9b'/></svg>">
+              <span>Instagram</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="wireframe-modal" id="wireframeModal" aria-hidden="true">
+          <div class="wireframe-modal-card">
+            <h3 id="wireframeModalTitle">Screen</h3>
+            <p id="wireframeModalText">Screen details.</p>
+            <div class="wireframe-modal-actions">
+              <button class="wireframe-btn" id="wireframeModalClose" type="button">Close</button>
+              <button class="wireframe-btn primary" id="wireframeModalOpen" type="button">Open Screen</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <section class="screen" id="report1">
+        <div class="card">
+          <div class="stepper">
+            <span class="step current">1. Incident Type</span><span class="step">2. Location</span><span class="step">3. Description</span><span class="step">4. Evidence</span><span class="step">5. Contact</span>
+          </div>
+          <h3>What happened?</h3>
+          <p>Select the incident type that best matches the situation.</p>
+          <div class="option-list" id="incidentOptions">
+            <div class="option selected"><span class="radio"></span><span>Sexual harassment</span></div>
+            <div class="option"><span class="radio"></span><span>Sexual assault</span></div>
+            <div class="option"><span class="radio"></span><span>Molestation</span></div>
+            <div class="option"><span class="radio"></span><span>Online harassment</span></div>
+            <div class="option"><span class="radio"></span><span>Threat / intimidation</span></div>
+            <div class="option"><span class="radio"></span><span>Other</span></div>
+          </div>
+          <div class="button-row"><button class="btn btn-secondary" data-goto="home">Back</button><button class="btn btn-primary" data-goto="report2">Next</button><button class="btn btn-secondary" data-goto="home">Cancel</button></div>
+        </div>
+      </section>
+
+      <section class="screen" id="report2">
+        <div class="card">
+          <div class="stepper">
+            <span class="step">1. Incident Type</span><span class="step current">2. Location</span><span class="step">3. Description</span><span class="step">4. Evidence</span><span class="step">5. Contact</span>
+          </div>
+          <h3>Where did this happen?</h3>
+          <p>Location is optional for safety. The user should always be able to skip this step.</p>
+          <div class="option-list" id="locationOptions">
+            <div class="option selected"><span class="radio"></span><span>School</span></div>
+            <div class="option"><span class="radio"></span><span>Home</span></div>
+            <div class="option"><span class="radio"></span><span>Online</span></div>
+            <div class="option"><span class="radio"></span><span>Public place</span></div>
+            <div class="option"><span class="radio"></span><span>Other</span></div>
+          </div>
+          <div class="button-row"><button class="btn btn-secondary">Share location</button><button class="btn btn-secondary" data-goto="report1">Back</button><button class="btn btn-primary" data-goto="report3">Next</button><button class="btn btn-secondary" data-goto="home">Skip for safety</button></div>
+        </div>
+      </section>
+
+      <section class="screen" id="report3">
+        <div class="card">
+          <div class="stepper">
+            <span class="step">1. Incident Type</span><span class="step">2. Location</span><span class="step current">3. Description</span><span class="step">4. Evidence</span><span class="step">5. Contact</span>
+          </div>
+          <h3>Tell us what happened</h3>
+          <p>Share as much or as little as you want. The language here is intentionally supportive and non-legal.</p>
+          <div style="margin-top:16px;"><textarea placeholder="Write what happened in your own words..."></textarea></div>
+          <div class="button-row"><button class="btn btn-primary" data-goto="report4">Next</button><button class="btn btn-secondary" data-goto="report2">Back</button></div>
+        </div>
+      </section>
+
+      <section class="screen" id="report4">
+        <div class="card">
+          <div class="stepper">
+            <span class="step">1. Incident Type</span><span class="step">2. Location</span><span class="step">3. Description</span><span class="step current">4. Evidence</span><span class="step">5. Contact</span>
+          </div>
+          <h3>Upload Evidence</h3>
+          <p>Optional uploads can help the support team review the case. In the real app, these files would be encrypted and securely stored.</p>
+          <div class="upload-grid" style="margin-top:16px;">
+            <div class="upload-box"><strong>Upload Photo</strong><p>Add an image if it is safe to do so.</p></div>
+            <div class="upload-box"><strong>Upload Audio</strong><p>Record or attach voice evidence.</p></div>
+            <div class="upload-box"><strong>Upload Screenshot</strong><p>Useful for online abuse cases.</p></div>
+          </div>
+          <div class="button-row"><button class="btn btn-secondary" data-goto="report3">Back</button><button class="btn btn-secondary" data-goto="report5">Skip</button><button class="btn btn-primary" data-goto="report5">Next</button></div>
+        </div>
+      </section>
+
+      <section class="screen" id="report5">
+        <div class="card">
+          <div class="stepper">
+            <span class="step">1. Incident Type</span><span class="step">2. Location</span><span class="step">3. Description</span><span class="step">4. Evidence</span><span class="step current">5. Contact</span>
+          </div>
+          <h3>How should we contact you?</h3>
+          <p>Anonymous mode stays selected by default. The user only shares contact information if they want to.</p>
+          <div class="option-list" id="contactOptions">
+            <div class="option selected"><span class="radio"></span><span>Remain anonymous</span></div>
+            <div class="option"><span class="radio"></span><span>Contact me by email</span></div>
+            <input type="email" placeholder="Email address (optional)" />
+            <div class="option"><span class="radio"></span><span>Contact me by phone</span></div>
+            <input type="tel" placeholder="Phone number (optional)" />
+          </div>
+          <div class="button-row"><button class="btn btn-primary" data-goto="case">Share Report Securely</button><button class="btn btn-secondary" data-goto="report4">Back</button></div>
+        </div>
+      </section>
+
+      <section class="screen" id="case">
+        <div class="card hero">
+          <span class="badge safe">Report shared safely</span>
+          <h3 style="margin-top:14px;">Your case has been created</h3>
+          <div class="case-id">SV-482193</div>
+          <p>A social worker will review your case shortly. Save this ID so you can check updates later without revealing your identity.</p>
+          <div class="button-row"><button class="btn btn-primary" data-goto="tracking">Track Case</button><button class="btn btn-secondary" id="copyCase">Copy Case ID</button><button class="btn btn-secondary" data-goto="home">Return Home</button></div>
+        </div>
+      </section>
+
+      <section class="screen" id="tracking">
+        <div class="grid grid-2">
+          <div class="card">
+            <h3>Case Dashboard</h3>
+            <p>Case ID: <strong>SV-482193</strong></p>
+            <div style="margin-top:12px;"><span class="badge review">Under Review</span></div>
+            <div class="timeline">
+              <div class="timeline-item"><strong>Case received</strong><div class="muted-small">Your report was saved securely.</div></div>
+              <div class="timeline-item"><strong>Social worker assigned</strong><div class="muted-small">Ada has been assigned to the case.</div></div>
+              <div class="timeline-item"><strong>Safety check pending</strong><div class="muted-small">Waiting for survivor response or additional evidence.</div></div>
+            </div>
+            <div class="button-row"><button class="btn btn-primary" data-goto="chat">Message Social Worker</button><button class="btn btn-secondary">Upload more evidence</button></div>
+          </div>
+          <div class="card">
+            <h3>Privacy reminder</h3>
+            <p>Your identity remains hidden. Share only what feels safe and necessary. In the real system, all updates would be permission-aware and staff-controlled.</p>
+            <div class="button-row"><button class="btn btn-secondary" data-goto="support">Find Support Near You</button><button class="btn btn-secondary" data-goto="resources">Open Resource Library</button></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="chat">
+        <div class="grid grid-2">
+          <div class="card">
+            <h3>Secure Support Chat</h3>
+            <p><span class="badge assigned">Anonymous Mode On</span></p>
+            <div class="chat-box" style="margin-top:14px;">
+              <div class="msg sw"><strong>Ada — Social Worker</strong><br>Hello, I’m here to help. You can share only what feels safe.</div>
+              <div class="msg you">Thank you. I want to know what happens next.</div>
+              <div class="msg sw">I will review your report, note any urgent safety concerns, and help connect you to shelter, legal aid, or medical support if needed.</div>
+            </div>
+            <div style="margin-top:14px;"><input type="text" placeholder="Type a secure message..." /></div>
+            <div class="button-row"><button class="btn btn-primary">Send</button><button class="btn btn-secondary">Attach evidence</button></div>
+          </div>
+          <div class="card">
+            <h3>Safety tip</h3>
+            <p>If it becomes unsafe to continue, use Quick Exit. This will return the screen to the icons home page.</p>
+            <div class="button-row"><button class="btn btn-danger" data-goto="home">Use Quick Exit</button></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="emergency">
+        <div class="card hero">
+          <span class="badge alert">High priority help</span>
+          <h3 style="margin-top:14px;">Are you in immediate danger?</h3>
+          <p>Use these urgent options only when it is safe to do so. A real product would connect these actions to verified local response services.</p>
+          <div class="support-grid" style="margin-top:18px;">
+            <div class="support-card"><strong>Call Emergency Line</strong><p>Fast action for urgent physical danger.</p><div class="button-row"><button class="btn btn-danger">Call now</button></div></div>
+            <div class="support-card"><strong>Alert Nearby Support</strong><p>Notify trusted or assigned support staff.</p><div class="button-row"><button class="btn btn-primary">Send alert</button></div></div>
+            <div class="support-card"><strong>Find Safe Shelter</strong><p>View the nearest shelter or safe place.</p><div class="button-row"><button class="btn btn-teal" data-goto="support">Open support map</button></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="support">
+        <div class="grid grid-2">
+          <div class="card">
+            <h3>Find Support Near You</h3>
+            <div class="map">
+              <span class="map-pin" style="left: 22%; top: 28%;"></span>
+              <span class="map-pin" style="left: 56%; top: 44%; background: var(--teal);"></span>
+              <span class="map-pin" style="left: 72%; top: 22%; background: var(--danger);"></span>
+              <span class="map-pin" style="left: 40%; top: 67%; background: var(--warning);"></span>
+            </div>
+            <div class="chips">
+              <span class="chip">🏥 Hospitals</span>
+              <span class="chip">⚖ Legal Aid</span>
+              <span class="chip">👩‍⚕ Social Workers</span>
+              <span class="chip">🏠 Safe Shelters</span>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Nearby support options</h3>
+            <div class="support-grid" style="grid-template-columns:1fr; margin-top:14px;">
+              <div class="support-card"><strong>Hope Shelter Centre</strong><p>Safe shelter · 1.4 km away</p></div>
+              <div class="support-card"><strong>City Women’s Legal Aid</strong><p>Legal assistance · 2.1 km away</p></div>
+              <div class="support-card"><strong>Community Social Worker Desk</strong><p>Confidential support · 900 m away</p></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="resources">
+        <div class="card">
+          <h3>Learn Your Rights</h3>
+          <p>Simple, supportive content designed for users who may be young, distressed, or accessing the app on limited data.</p>
+          <div style="margin-top:14px;"><input type="text" placeholder="Search resources..." /></div>
+          <div class="chips">
+            <span class="chip">After abuse</span>
+            <span class="chip">Legal rights</span>
+            <span class="chip">Safe help-seeking</span>
+            <span class="chip">Mental health support</span>
+          </div>
+          <div class="resource-grid" style="margin-top:18px;">
+            <div class="resource-item"><strong>What to do after abuse</strong><p>Immediate safety steps and how to preserve evidence if safe.</p></div>
+            <div class="resource-item"><strong>Legal rights for victims</strong><p>Clear rights information using simple language.</p></div>
+            <div class="resource-item"><strong>How to seek help safely</strong><p>Discreet ways to contact services or trusted adults.</p></div>
+            <div class="resource-item"><strong>Mental health support</strong><p>Calming guidance and referral options for emotional recovery.</p></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  
+  <div class="wireframe-modal" id="pinModal" aria-hidden="true">
+    <div class="wireframe-modal-card">
+      <h3 id="pinModalTitle">Create Access PIN</h3>
+      <p id="pinModalText">Choose a 4-digit PIN to open the icons page from this calculator.</p>
+      <input type="password" id="pinModalInput" inputmode="numeric" maxlength="4" placeholder="Enter 4 digits" style="text-align:center; letter-spacing:0.35em; margin-bottom:12px;" />
+      <div class="wireframe-modal-actions">
+        <button class="wireframe-btn" id="pinModalCancel" type="button">Cancel</button>
+        <button class="wireframe-btn primary" id="pinModalSave" type="button">Save PIN</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+    const screens = document.querySelectorAll('.screen');
+    const navButtons = document.querySelectorAll('.nav-btn');
+    const title = document.getElementById('screenTitle');
+    const desc = document.getElementById('screenDesc');
+
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    function closeMenu() {
+      document.body.classList.remove('menu-open');
+      if (menuToggle) menuToggle.setAttribute('aria-expanded', 'false');
+    }
+
+    function openMenu() {
+      if (window.innerWidth <= 980) document.body.classList.add('menu-open');
+    }
+
+    const screenMeta = {
+      entry: ['Home', 'Calculator access home screen with 4-digit PIN protection.'],
+      home: ['Icons Home', 'Open reporting, tracking, support, and resources after PIN access.'],
+      report1: ['Report Abuse', 'Start a secure report with simple, supportive steps.'],
+      report2: ['Report Step 2', 'Safe location capture with a visible skip path.'],
+      report3: ['Report Step 3', 'Supportive incident description field.'],
+      report4: ['Report Step 4', 'Optional encrypted evidence upload concept.'],
+      report5: ['Report Step 5', 'Anonymous-by-default contact preferences.'],
+      case: ['Case Created', 'Confirmation, reassurance, and case ID handoff.'],
+      tracking: ['Track My Case', 'Check status, updates, and next steps privately.'],
+      chat: ['Secure Support Chat', 'Anonymous support messaging with a social worker.'],
+      emergency: ['Emergency Help', 'Urgent help actions in a controlled interface.'],
+      support: ['Find Support', 'Nearby support services with filterable categories.'],
+      resources: ['Learn Your Rights', 'Simple rights and safety education content.']
+    };
+
+
+    const screenOrder = ['entry', 'home', 'report1', 'report2', 'report3', 'report4', 'report5', 'case', 'tracking', 'chat', 'emergency', 'support', 'resources'];
+
+    function getPrevScreen(id) {
+      const index = screenOrder.indexOf(id);
+      return index > 0 ? screenOrder[index - 1] : 'home';
+    }
+
+    function getNextScreen(id) {
+      const index = screenOrder.indexOf(id);
+      return index >= 0 && index < screenOrder.length - 1 ? screenOrder[index + 1] : 'home';
+    }
+
+    function ensureScreenShells() {
+      document.querySelectorAll('.screen').forEach((screen) => {
+        if (screen.querySelector(':scope > .screen-shell')) return;
+        const shell = document.createElement('div');
+        shell.className = 'screen-shell';
+        while (screen.firstChild) {
+          shell.appendChild(screen.firstChild);
+        }
+        screen.appendChild(shell);
+      });
+    }
+
+    function injectScreenNav() {
+      document.querySelectorAll('.screen').forEach((screen) => {
+        const shell = screen.querySelector(':scope > .screen-shell');
+        if (!shell || screen.id === 'entry') return;
+
+        if (!shell.querySelector('.screen-quick-exit-wrap')) {
+          const quickExitWrap = document.createElement('div');
+          quickExitWrap.className = 'screen-quick-exit-wrap';
+          const actionButtons = [];
+          if (screen.id !== 'home') {
+            actionButtons.push(`<button class="screen-home-btn" type="button" data-go-home="home">Return Home</button>`);
+            actionButtons.push(`<button class="screen-quick-exit-btn" type="button" data-quick-exit="entry">Quick Exit</button>`);
+          }
+          quickExitWrap.innerHTML = actionButtons.join('');
+          if (actionButtons.length) shell.insertBefore(quickExitWrap, shell.firstChild);
+        }
+
+        if (shell.querySelector('.screen-nav') || screen.id === 'home') return;
+
+        const hasExistingBackOrNext = Array.from(screen.querySelectorAll('button, a')).some((el) => {
+          const label = (el.textContent || '').replace(/\s+/g, ' ').trim().toLowerCase();
+          return label === 'next' || label === 'back' || label === 'save/next' || label === 'next →' || label === '← back';
+        });
+
+        if (hasExistingBackOrNext) return;
+
+        const nav = document.createElement('div');
+        nav.className = 'screen-nav';
+        nav.innerHTML = `
+          <div class="screen-nav-left">
+            <button class="screen-nav-btn ghost" type="button" data-nav-action="back">Back</button>
+          </div>
+          <div class="screen-nav-right">
+            <button class="screen-nav-btn primary" type="button" data-nav-action="next">Save/Next</button>
+          </div>
+        `;
+        shell.appendChild(nav);
+      });
+
+      document.querySelectorAll('.screen-nav [data-nav-action="back"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          goBack();
+        });
+      });
+
+      document.querySelectorAll('[data-go-home="home"]').forEach(btn => {
+        btn.addEventListener('click', () => showScreen('home'));
+      });
+
+      document.querySelectorAll('.screen-nav [data-nav-action="next"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const screen = btn.closest('.screen');
+          showScreen(getNextScreen(screen.id));
+        });
+      });
+
+      document.querySelectorAll('[data-quick-exit="entry"]').forEach(btn => {
+        btn.addEventListener('click', () => showScreen('entry', { clearHistory: true }));
+      });
+
+    }
+
+    function getDashboardIconSvg(key) {
+      const icons = {
+        report: '<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#ffffff" stop-opacity="0.34"/><stop offset="1" stop-color="#ffffff" stop-opacity="0.18"/></linearGradient></defs><rect x="3" y="3" width="58" height="58" rx="20" fill="url(#g1)" stroke="rgba(255,255,255,0.72)" stroke-width="2"/><path d="M22 18h15l7 7v21H22z" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round"/><path d="M37 18v9h9M27 34h12M27 41h10" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+        emergency: '<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="3" y="3" width="58" height="58" rx="20" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.72)" stroke-width="2"/><path d="M32 18l4.5 9.5L47 32l-10.5 4.5L32 46l-4.5-9.5L17 32l10.5-4.5z" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round"/><path d="M32 25v14M25 32h14" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+        support: '<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="3" y="3" width="58" height="58" rx="20" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.72)" stroke-width="2"/><path d="M22 25c0-6 4.6-10 10-10s10 4 10 10c0 10-10 18-10 18S22 35 22 25z" fill="none" stroke="#fff" stroke-width="3"/><circle cx="32" cy="25" r="3.6" fill="none" stroke="#fff" stroke-width="3"/></svg>',
+        rights: '<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="3" y="3" width="58" height="58" rx="20" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.72)" stroke-width="2"/><path d="M22 19h20l6 6v20H22z" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round"/><path d="M28 31h14M28 38h10" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M42 19v7h6" stroke="#fff" stroke-width="3" stroke-linejoin="round"/></svg>',
+        case: '<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="3" y="3" width="58" height="58" rx="20" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.72)" stroke-width="2"/><rect x="18" y="20" width="28" height="24" rx="5" fill="none" stroke="#fff" stroke-width="3"/><path d="M24 17h16M26 30l4 4 8-8" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+        track: '<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="3" y="3" width="58" height="58" rx="20" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.72)" stroke-width="2"/><circle cx="30" cy="30" r="11" fill="none" stroke="#fff" stroke-width="3"/><path d="M38 38l8 8M30 25v6l4 3" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+        chat: '<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="3" y="3" width="58" height="58" rx="20" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.72)" stroke-width="2"/><path d="M18 21h28a6 6 0 0 1 6 6v11a6 6 0 0 1-6 6H29l-9 6v-6h-2a6 6 0 0 1-6-6V27a6 6 0 0 1 6-6z" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round"/><path d="M24 32h16M24 38h10" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+        worker: '<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="3" y="3" width="58" height="58" rx="20" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.72)" stroke-width="2"/><circle cx="32" cy="24" r="7" fill="none" stroke="#fff" stroke-width="3"/><path d="M20 45c2.5-7 7-11 12-11s9.5 4 12 11" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M45 18v8M41 22h8" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+        admin: '<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="3" y="3" width="58" height="58" rx="20" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.72)" stroke-width="2"/><path d="M32 18l14 8v12c0 8-6 14-14 18-8-4-14-10-14-18V26z" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round"/><path d="M27 33l4 4 7-8" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+      };
+      return icons[key] || icons.report;
+    }
+
+
+    function setupHomeAppMenu() {
+      const toggle = document.getElementById('homeAppMenuToggle');
+      const panel = document.getElementById('homeAppMenuPanel');
+      if (!toggle || !panel) return;
+
+      const closeHomeAppMenu = () => {
+        panel.classList.remove('is-open');
+        panel.setAttribute('aria-hidden', 'true');
+        toggle.setAttribute('aria-expanded', 'false');
+      };
+
+      toggle.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const isOpen = panel.classList.toggle('is-open');
+        panel.setAttribute('aria-hidden', String(!isOpen));
+        toggle.setAttribute('aria-expanded', String(isOpen));
+      });
+
+      panel.querySelectorAll('[data-goto]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          closeHomeAppMenu();
+          showScreen(btn.dataset.goto || 'home');
+        });
+      });
+
+      document.addEventListener('click', (event) => {
+        if (!panel.contains(event.target) && !toggle.contains(event.target)) {
+          closeHomeAppMenu();
+        }
+      });
+    }
+
+    function hydrateDashboardIcons() {
+      document.querySelectorAll('.wf-icon').forEach((icon) => {
+        const key = icon.dataset.iconKey || 'report';
+        const label = icon.dataset.iconTitle || 'Screen';
+        icon.innerHTML = `<span class="icon-image">${getDashboardIconSvg(key)}</span><span class="icon-label">${label}</span>`;
+      });
+    }
+
+    function setupHomeSearch() {
+      const input = document.getElementById('homeSearchInput');
+      const grid = document.getElementById('homeIconGrid');
+      if (!input || !grid) return;
+      const cards = Array.from(grid.querySelectorAll('.wf-icon-wrap'));
+      input.addEventListener('input', () => {
+        const term = input.value.trim().toLowerCase();
+        grid.classList.toggle('is-filtered', term.length > 0);
+        cards.forEach((card) => {
+          const button = card.querySelector('.wf-icon');
+          const haystack = [
+            button?.dataset.iconTitle || '',
+            button?.dataset.iconDetail || '',
+            button?.dataset.iconScreen || '',
+            button?.dataset.iconKey || ''
+          ].join(' ').toLowerCase();
+          card.hidden = term ? !haystack.includes(term) : false;
+        });
+      });
+    }
+
+    const ACTIVE_SCREEN_KEY = 'safevoice_active_screen';
+    const SCREEN_HISTORY_KEY = 'safevoice_screen_history';
+    let screenHistory = [];
+
+    function persistActiveScreen(id) {
+      try { localStorage.setItem(ACTIVE_SCREEN_KEY, id); } catch (error) {}
+    }
+
+    function persistScreenHistory() {
+      try { localStorage.setItem(SCREEN_HISTORY_KEY, JSON.stringify(screenHistory)); } catch (error) {}
+    }
+
+    function getPersistedScreen() {
+      try {
+        const saved = localStorage.getItem(ACTIVE_SCREEN_KEY) || '';
+        return screenMeta[saved] ? saved : '';
+      } catch (error) {
+        return '';
+      }
+    }
+
+    function hydrateScreenHistory() {
+      try {
+        const raw = localStorage.getItem(SCREEN_HISTORY_KEY) || '[]';
+        const parsed = JSON.parse(raw);
+        screenHistory = Array.isArray(parsed) ? parsed.filter((id) => screenMeta[id]) : [];
+      } catch (error) {
+        screenHistory = [];
+      }
+    }
+
+    function showScreen(id, options = {}) {
+      const lockedPublicScreens = new Set(['report1', 'tracking', 'chat', 'emergency', 'support', 'resources', 'home']);
+      const targetId = screenMeta[id] ? id : 'entry';
+      const safeId = (!document.body.classList.contains('user-unlocked') && lockedPublicScreens.has(targetId)) ? 'entry' : targetId;
+      const currentScreen = document.querySelector('.screen.active');
+      const currentId = currentScreen ? currentScreen.id : '';
+      const shouldTrackHistory = !options.skipHistory && currentId && currentId !== safeId;
+
+      if (shouldTrackHistory) {
+        screenHistory.push(currentId);
+        if (screenHistory.length > 60) screenHistory = screenHistory.slice(-60);
+        persistScreenHistory();
+      } else if (options.clearHistory) {
+        screenHistory = [];
+        persistScreenHistory();
+      }
+
+      screens.forEach(screen => screen.classList.toggle('active', screen.id === safeId));
+      navButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.screen === safeId));
+      title.textContent = screenMeta[safeId][0];
+      desc.textContent = screenMeta[safeId][1];
+      persistActiveScreen(safeId);
+      closeMenu();
+      if (safeId === 'home') {
+        const searchInput = document.getElementById('homeSearchInput');
+        if (searchInput) {
+          searchInput.value = '';
+          const grid = document.getElementById('homeIconGrid');
+          if (grid) {
+            grid.classList.remove('is-filtered');
+            grid.querySelectorAll('.wf-icon-wrap').forEach((item) => {
+              item.hidden = false;
+            });
+          }
+        }
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function goBack() {
+      const previousId = screenHistory.pop();
+      persistScreenHistory();
+      showScreen(previousId || 'home', { skipHistory: true });
+    }
+
+    navButtons.forEach(btn => btn.addEventListener('click', () => showScreen(btn.dataset.screen)));
+    if (menuToggle) menuToggle.addEventListener('click', () => {
+      const isOpen = document.body.classList.toggle('menu-open');
+      menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+    if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeMenu);
+    window.addEventListener('resize', () => { if (window.innerWidth > 980) closeMenu(); });
+    document.querySelectorAll('[data-goto]').forEach(el => el.addEventListener('click', () => showScreen(el.dataset.goto)));
+
+    const calcDisplay = document.getElementById('calcDisplay');
+    const calcHint = document.getElementById('calcHint');
+    const pinModal = document.getElementById('pinModal');
+    const pinModalTitle = document.getElementById('pinModalTitle');
+    const pinModalText = document.getElementById('pinModalText');
+    const pinModalInput = document.getElementById('pinModalInput');
+    const pinModalCancel = document.getElementById('pinModalCancel');
+    const pinModalSave = document.getElementById('pinModalSave');
+    const setPinBtn = document.getElementById('setPinBtn');
+    const clearPinBtn = document.getElementById('clearPinBtn');
+    const ACCESS_PIN_KEY = 'safevoice_access_pin';
+    let calcExpression = '0';
+    let awaitingNewPin = false;
+
+    function getStoredPin() {
+      try { return localStorage.getItem(ACCESS_PIN_KEY) || ''; } catch (error) { return ''; }
+    }
+
+    function setStoredPin(pin) {
+      try { localStorage.setItem(ACCESS_PIN_KEY, pin); } catch (error) {}
+    }
+
+    function clearStoredPin() {
+      try { localStorage.removeItem(ACCESS_PIN_KEY); } catch (error) {}
+    }
+
+    function setUserUnlocked(unlocked) {
+      document.body.classList.toggle('user-unlocked', !!unlocked);
+    }
+
+    function setCalcHint(message) {
+      if (calcHint) calcHint.textContent = message;
+    }
+
+    function updateDisplay(value) {
+      calcExpression = value && String(value).length ? String(value) : '0';
+      if (calcDisplay) calcDisplay.textContent = calcExpression;
+    }
+
+    function normalizeExpression(expression) {
+      return expression.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
+    }
+
+    function isPinCandidate(value) {
+      return /^\d{4}$/.test(String(value));
+    }
+
+    function openPinModal(mode = 'create', suggestedPin = '') {
+      awaitingNewPin = mode === 'create';
+      if (pinModalTitle) pinModalTitle.textContent = mode === 'create' ? 'Create Access PIN' : 'Change Access PIN';
+      if (pinModalText) pinModalText.textContent = mode === 'create'
+        ? 'Choose a 4-digit PIN to open the icons page from this calculator.'
+        : 'Enter a new 4-digit PIN for calculator access.';
+      if (pinModalInput) {
+        pinModalInput.value = suggestedPin;
+        pinModalInput.focus();
+      }
+      if (pinModalSave) pinModalSave.textContent = mode === 'create' ? 'Save PIN' : 'Update PIN';
+      if (pinModal) {
+        pinModal.classList.add('open');
+        pinModal.setAttribute('aria-hidden', 'false');
+      }
+    }
+
+    function closePinModal() {
+      if (!pinModal) return;
+      pinModal.classList.remove('open');
+      pinModal.setAttribute('aria-hidden', 'true');
+    }
+
+    function appendCalcValue(value) {
+      const current = calcExpression === '0' && /\d/.test(value) ? '' : calcExpression;
+      updateDisplay((current + value).slice(0, 24));
+    }
+
+    function deleteCalcValue() {
+      updateDisplay(calcExpression.length > 1 ? calcExpression.slice(0, -1) : '0');
+    }
+
+    function clearCalculator() {
+      updateDisplay('0');
+      setUserUnlocked(false);
+      const hasPin = !!getStoredPin();
+      setCalcHint(hasPin
+        ? 'Use the calculator normally. Enter your 4-digit PIN and press = to unlock the icons page.'
+        : 'No PIN saved yet. Use Create / Change 4-Digit PIN to set access.');
+    }
+
+    function openIconsHome() {
+      setUserUnlocked(true);
+      screens.forEach(screen => screen.classList.toggle('active', screen.id === 'home'));
+      navButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.screen === 'home'));
+      title.textContent = screenMeta.home[0];
+      desc.textContent = screenMeta.home[1];
+      persistActiveScreen('home');
+      closeMenu();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function unlockWithPin(pin) {
+      if (pin === getStoredPin()) {
+        setCalcHint('Access granted. Opening icons page.');
+        updateDisplay('0');
+        openIconsHome();
+      } else {
+        setCalcHint('Wrong 4-digit PIN. Calculator remains private.');
+      }
+    }
+
+    function calculateOrUnlock() {
+      const current = calcExpression.trim();
+      const storedPin = getStoredPin();
+      if (isPinCandidate(current)) {
+        if (!storedPin) {
+          openPinModal('create', current);
+          return;
+        }
+        unlockWithPin(current);
+        return;
+      }
+      try {
+        const sanitized = normalizeExpression(current);
+        if (!/^[0-9+\-*/.()\s]+$/.test(sanitized)) throw new Error('Invalid expression');
+        const result = Function('"use strict"; return (' + sanitized + ')')();
+        if (!Number.isFinite(result)) throw new Error('Invalid result');
+        updateDisplay(String(result));
+        setCalcHint('Calculation complete.');
+      } catch (error) {
+        setCalcHint('Invalid calculation. Check the numbers and operators.');
+      }
+    }
+
+    document.querySelectorAll('[data-calc-value]').forEach((button) => {
+      button.addEventListener('click', () => appendCalcValue(button.dataset.calcValue || ''));
+    });
+
+    document.querySelectorAll('[data-calc-action]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const action = button.dataset.calcAction;
+        if (action === 'clear') clearCalculator();
+        if (action === 'delete') deleteCalcValue();
+        if (action === 'equals') calculateOrUnlock();
+        if (action === 'pin') {
+          const current = isPinCandidate(calcExpression) ? calcExpression : '';
+          if (current && getStoredPin() && current === getStoredPin()) {
+            unlockWithPin(current);
+            return;
+          }
+          openPinModal(getStoredPin() ? 'change' : 'create', current);
+        }
+      });
+    });
+
+    if (setPinBtn) {
+      setPinBtn.addEventListener('click', () => {
+        const current = isPinCandidate(calcExpression) ? calcExpression : '';
+        openPinModal(getStoredPin() ? 'change' : 'create', current);
+      });
+    }
+
+    if (clearPinBtn) {
+      clearPinBtn.addEventListener('click', () => {
+        clearStoredPin();
+        clearCalculator();
+        setCalcHint('Access PIN removed. You can still use the calculator normally.');
+      });
+    }
+
+    if (pinModalCancel) pinModalCancel.addEventListener('click', closePinModal);
+    if (pinModal) {
+      pinModal.addEventListener('click', (event) => {
+        if (event.target === pinModal) closePinModal();
+      });
+    }
+
+    if (pinModalSave) {
+      pinModalSave.addEventListener('click', () => {
+        const pin = (pinModalInput?.value || '').trim();
+        if (!/^\d{4}$/.test(pin)) {
+          setCalcHint('PIN must be exactly 4 digits.');
+          return;
+        }
+        setStoredPin(pin);
+        closePinModal();
+        updateDisplay('0');
+        setCalcHint('4-digit PIN created. Enter it anytime and press = to open the icons page.');
+      });
+    }
+
+    if (pinModalInput) {
+      pinModalInput.addEventListener('input', () => {
+        pinModalInput.value = pinModalInput.value.replace(/\D/g, '').slice(0, 4);
+      });
+      pinModalInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && pinModalSave) pinModalSave.click();
+      });
+    }
+
+    window.addEventListener('keydown', (event) => {
+      if (pinModal && pinModal.classList.contains('open')) return;
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        calculateOrUnlock();
+      }
+    });
+
+    clearCalculator();
+
+    document.querySelectorAll('#incidentOptions .option, #locationOptions .option, #contactOptions .option').forEach(option => {
+      option.addEventListener('click', () => {
+        const container = option.parentElement;
+        container.querySelectorAll('.option').forEach(item => item.classList.remove('selected'));
+        option.classList.add('selected');
+      });
+    });
+    const API_BASE_URL = (window.SAFEVOICE_API_BASE_URL || 'http://localhost:5000/api').replace(/\/$/, '');
+    const ADMIN_USERNAME = 'OyoTectHub';
+    const ADMIN_PASSWORD = 'AbuseProject2026';
+    const adminLoginCard = document.getElementById('adminLoginCard');
+    const adminDashboard = document.getElementById('adminDashboard');
+    const adminLoginBtn = document.getElementById('adminLoginBtn');
+    const adminLogoutBtn = document.getElementById('adminLogoutBtn');
+    const adminUsername = document.getElementById('adminUsername');
+    const adminPassword = document.getElementById('adminPassword');
+    const adminLoginError = document.getElementById('adminLoginError');
+
+    const workerLoginCard = document.getElementById('workerLoginCard');
+    const workerDashboard = document.getElementById('workerDashboard');
+    const workerLoginBtn = document.getElementById('workerLoginBtn');
+    const workerLogoutBtn = document.getElementById('workerLogoutBtn');
+    const workerRefreshBtn = document.getElementById('workerRefreshBtn');
+    const workerUsername = document.getElementById('workerUsername');
+    const workerPassword = document.getElementById('workerPassword');
+    const workerLoginError = document.getElementById('workerLoginError');
+    const workerCasesMessage = document.getElementById('workerCasesMessage');
+    const workerCasesTableBody = document.getElementById('workerCasesTableBody');
+    const workerTotalCases = document.getElementById('workerTotalCases');
+    const workerOpenCases = document.getElementById('workerOpenCases');
+    const workerHighPriority = document.getElementById('workerHighPriority');
+    const workerOfficerCount = document.getElementById('workerOfficerCount');
+    const workerDetailCaseId = document.getElementById('workerDetailCaseId');
+    const workerDetailOfficer = document.getElementById('workerDetailOfficer');
+    const workerDetailPriority = document.getElementById('workerDetailPriority');
+    const workerDetailNotes = document.getElementById('workerDetailNotes');
+    const workerSelectedCaseIntro = document.getElementById('workerSelectedCaseIntro');
+    const workerMarkReviewBtn = document.getElementById('workerMarkReviewBtn');
+    const workerMarkResolvedBtn = document.getElementById('workerMarkResolvedBtn');
+    let selectedWorkerCaseId = '';
+    let workerCasesCache = [];
+
+    function setAdminState(isLoggedIn) {
+      if (!adminLoginCard || !adminDashboard) return;
+      adminLoginCard.style.display = isLoggedIn ? 'none' : 'block';
+      adminDashboard.style.display = isLoggedIn ? 'block' : 'none';
+      if (!isLoggedIn) {
+        adminUsername.value = '';
+        adminPassword.value = '';
+      }
+    }
+
+    function setWorkerState(isLoggedIn) {
+      if (!workerLoginCard || !workerDashboard) return;
+      workerLoginCard.style.display = isLoggedIn ? 'none' : 'block';
+      workerDashboard.style.display = isLoggedIn ? 'block' : 'none';
+      if (!isLoggedIn) {
+        if (workerUsername) workerUsername.value = '';
+        if (workerPassword) workerPassword.value = '';
+        selectedWorkerCaseId = '';
+        workerCasesCache = [];
+        renderWorkerCases([]);
+        setWorkerCaseDetails(null);
+      }
+    }
+
+    function getBadgeClass(status) {
+      const normalized = String(status || '').toLowerCase();
+      if (normalized.includes('resolve')) return 'safe';
+      if (normalized.includes('assign')) return 'assigned';
+      if (normalized.includes('review')) return 'review';
+      if (normalized.includes('alert') || normalized.includes('high')) return 'alert';
+      return 'assigned';
+    }
+
+    function setWorkerMetrics(metrics = {}) {
+      if (workerTotalCases) workerTotalCases.textContent = String(metrics.totalCases || 0);
+      if (workerOpenCases) workerOpenCases.textContent = String(metrics.totalOpenCases || 0);
+      if (workerHighPriority) workerHighPriority.textContent = String(metrics.highPriorityAlerts || 0);
+      if (workerOfficerCount) workerOfficerCount.textContent = String(metrics.activeSupportOfficers || 0);
+    }
+
+    function setWorkerCaseDetails(caseItem) {
+      if (!workerDetailCaseId) return;
+      if (!caseItem) {
+        workerDetailCaseId.textContent = 'No case selected';
+        workerDetailOfficer.textContent = 'Unassigned';
+        workerDetailPriority.textContent = 'Normal';
+        workerDetailNotes.textContent = 'No internal notes yet.';
+        if (workerSelectedCaseIntro) workerSelectedCaseIntro.textContent = 'Select a case from the dashboard to review details, internal notes, and next actions.';
+        return;
+      }
+      selectedWorkerCaseId = caseItem.caseId;
+      workerDetailCaseId.textContent = caseItem.caseId || 'Unknown';
+      workerDetailOfficer.textContent = caseItem.assignedOfficer || 'Unassigned';
+      workerDetailPriority.textContent = caseItem.priority || 'Normal';
+      const lastTimeline = Array.isArray(caseItem.timeline) && caseItem.timeline.length ? caseItem.timeline[caseItem.timeline.length - 1] : null;
+      workerDetailNotes.textContent = lastTimeline?.note || caseItem.incidentDetails || 'No internal notes yet.';
+      if (workerSelectedCaseIntro) workerSelectedCaseIntro.textContent = `${caseItem.incidentType || 'Incident'} · ${caseItem.location || 'Not shared'} · ${caseItem.status || 'Pending'}`;
+    }
+
+    function renderWorkerCases(cases) {
+      if (!workerCasesTableBody) return;
+      if (!cases.length) {
+        workerCasesTableBody.innerHTML = '<tr><td colspan="4">No cases found in the backend yet.</td></tr>';
+        return;
+      }
+      workerCasesTableBody.innerHTML = cases.map((caseItem) => `
+        <tr data-case-id="${caseItem.caseId}">
+          <td><button class="btn btn-secondary" type="button" data-worker-case="${caseItem.caseId}" style="padding:8px 12px; min-height:auto;">${caseItem.caseId}</button></td>
+          <td>${caseItem.incidentType || 'Not shared'}</td>
+          <td><span class="badge ${getBadgeClass(caseItem.status)}">${caseItem.status || 'Pending'}</span></td>
+          <td>${caseItem.location || 'Not shared'}</td>
+        </tr>`).join('');
+      workerCasesTableBody.querySelectorAll('[data-worker-case]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const picked = workerCasesCache.find((item) => item.caseId === button.dataset.workerCase);
+          setWorkerCaseDetails(picked || null);
+        });
+      });
+    }
+
+    async function loadWorkerCases() {
+      if (!workerCasesMessage) return;
+      workerCasesMessage.textContent = 'Loading live cases from the backend...';
+      try {
+        const response = await fetch(`${API_BASE_URL}/cases`);
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.message || 'Unable to fetch cases.');
+        workerCasesCache = Array.isArray(payload.cases) ? payload.cases : [];
+        setWorkerMetrics(payload.metrics || {});
+        renderWorkerCases(workerCasesCache);
+        setWorkerCaseDetails(workerCasesCache[0] || null);
+        workerCasesMessage.textContent = workerCasesCache.length ? 'Live case data loaded successfully.' : 'No case reports have been submitted yet.';
+      } catch (error) {
+        workerCasesCache = [];
+        renderWorkerCases([]);
+        setWorkerMetrics({});
+        setWorkerCaseDetails(null);
+        workerCasesMessage.textContent = `Unable to load backend cases. Check that the server is running on ${API_BASE_URL}.`;
+      }
+    }
+
+    async function updateWorkerCaseStatus(nextStatus, note) {
+      if (!selectedWorkerCaseId) {
+        if (workerCasesMessage) workerCasesMessage.textContent = 'Select a case first before updating status.';
+        return;
+      }
+      if (workerCasesMessage) workerCasesMessage.textContent = `Updating ${selectedWorkerCaseId}...`;
+      try {
+        const response = await fetch(`${API_BASE_URL}/cases/${encodeURIComponent(selectedWorkerCaseId)}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: nextStatus, assignedOfficer: 'socialworker', note })
+        });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.message || 'Unable to update case.');
+        if (workerCasesMessage) workerCasesMessage.textContent = `${selectedWorkerCaseId} updated successfully.`;
+        await loadWorkerCases();
+        const refreshed = workerCasesCache.find((item) => item.caseId === selectedWorkerCaseId) || payload;
+        setWorkerCaseDetails(refreshed);
+      } catch (error) {
+        if (workerCasesMessage) workerCasesMessage.textContent = error.message || 'Unable to update case status.';
+      }
+    }
+
+    async function handleWorkerLogin() {
+      const username = (workerUsername?.value || '').trim();
+      const password = workerPassword?.value || '';
+      try {
+        const response = await fetch(`${API_BASE_URL}/auth/worker/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.message || 'Invalid social worker credentials.');
+        if (workerLoginError) workerLoginError.style.display = 'none';
+        setWorkerState(true);
+        await loadWorkerCases();
+      } catch (error) {
+        if (workerLoginError) {
+          workerLoginError.textContent = error.message || 'Incorrect username or password.';
+          workerLoginError.style.display = 'block';
+        }
+        setWorkerState(false);
+      }
+    }
+
+    if (adminLoginBtn) {
+      adminLoginBtn.addEventListener('click', () => {
+        const username = adminUsername.value.trim();
+        const password = adminPassword.value;
+        if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+          adminLoginError.style.display = 'none';
+          setAdminState(true);
+        } else {
+          adminLoginError.style.display = 'block';
+          setAdminState(false);
+        }
+      });
+    }
+
+    if (adminPassword) {
+      adminPassword.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          adminLoginBtn.click();
+        }
+      });
+    }
+
+    if (adminUsername) {
+      adminUsername.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          adminLoginBtn.click();
+        }
+      });
+    }
+
+    if (adminLogoutBtn) {
+      adminLogoutBtn.addEventListener('click', () => {
+        adminLoginError.style.display = 'none';
+        setAdminState(false);
+      });
+    }
+
+    if (workerLoginBtn) {
+      workerLoginBtn.addEventListener('click', handleWorkerLogin);
+    }
+
+    if (workerUsername) {
+      workerUsername.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') handleWorkerLogin();
+      });
+    }
+
+    if (workerPassword) {
+      workerPassword.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') handleWorkerLogin();
+      });
+    }
+
+    if (workerRefreshBtn) {
+      workerRefreshBtn.addEventListener('click', loadWorkerCases);
+    }
+
+    if (workerLogoutBtn) {
+      workerLogoutBtn.addEventListener('click', () => {
+        if (workerLoginError) workerLoginError.style.display = 'none';
+        if (workerCasesMessage) workerCasesMessage.textContent = 'Signed out of the social worker dashboard.';
+        setWorkerState(false);
+      });
+    }
+
+    if (workerMarkReviewBtn) {
+      workerMarkReviewBtn.addEventListener('click', () => updateWorkerCaseStatus('Reviewing', 'Case opened by social worker for trauma-informed review.'));
+    }
+
+    if (workerMarkResolvedBtn) {
+      workerMarkResolvedBtn.addEventListener('click', () => updateWorkerCaseStatus('Resolved', 'Case marked resolved after safe follow-up and referral review.'));
+    }
+
+    ensureScreenShells();
+    hydrateDashboardIcons();
+    setupHomeAppMenu();
+    injectScreenNav();
+    setAdminState(false);
+    setWorkerState(false);
+    hydrateScreenHistory();
+    showScreen('entry', { skipHistory: true, clearHistory: true });
+
+    document.querySelectorAll('.cta-card').forEach(card => card.addEventListener('click', () => showScreen(card.dataset.goto)));
+
+    const globalExitBtn = document.getElementById('globalExitTopbar');
+    if (globalExitBtn) globalExitBtn.addEventListener('click', () => {
+      closePinModal();
+      updateDisplay('0');
+      clearCalculator();
+      showScreen('entry', { clearHistory: true });
+    });
+
+    const wireframeModal = document.getElementById('wireframeModal');
+    const wireframeModalTitle = document.getElementById('wireframeModalTitle');
+    const wireframeModalText = document.getElementById('wireframeModalText');
+    const wireframeModalOpen = document.getElementById('wireframeModalOpen');
+    const wireframeModalClose = document.getElementById('wireframeModalClose');
+    let pendingWireframeScreen = 'home';
+
+    function closeWireframeModal() {
+      if (!wireframeModal) return;
+      wireframeModal.classList.remove('open');
+      wireframeModal.setAttribute('aria-hidden', 'true');
+    }
+
+    document.querySelectorAll('[data-icon-screen]').forEach(icon => {
+      icon.addEventListener('click', () => {
+        pendingWireframeScreen = icon.dataset.iconScreen || 'home';
+        closeWireframeModal();
+        showScreen(pendingWireframeScreen);
+      });
+    });
+
+    if (wireframeModalClose) wireframeModalClose.addEventListener('click', closeWireframeModal);
+    if (wireframeModal) {
+      wireframeModal.addEventListener('click', (event) => {
+        if (event.target === wireframeModal) closeWireframeModal();
+      });
+    }
+    if (wireframeModalOpen) {
+      wireframeModalOpen.addEventListener('click', () => {
+        closeWireframeModal();
+        showScreen(pendingWireframeScreen);
+      });
+    }
+
+    const copyCaseBtn = document.getElementById('copyCase');
+    if (copyCaseBtn) copyCaseBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText('SV-482193');
+        alert('Case ID copied: SV-482193');
+      } catch (e) {
+        alert('Case ID: SV-482193');
+      }
+    });
+
+  </script>
+
+
+</body>
+</html>
