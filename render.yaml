@@ -1,0 +1,44 @@
+services:
+  - type: web
+    name: safevoice-backend
+    env: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGODB_URI
+        sync: false
+      - key: CLIENT_URL
+        value: https://safevoice.onrender.com
+      - key: WORLDWIDE_URL
+        value: https://safevoice-worldwide.onrender.com
+      - key: CORS_ORIGINS
+        value: https://safevoice.onrender.com,https://safevoice-worldwide.onrender.com,http://localhost:5173,http://127.0.0.1:5173
+      - key: JWT_SECRET
+        sync: false
+      - key: AUTH_SECRET
+        sync: false
+      - key: USER_AGENT
+        value: SafeVoiceWorldwide/1.0
+      - key: AZURE_TRANSLATOR_KEY
+        sync: false
+      - key: AZURE_TRANSLATOR_REGION
+        sync: false
+      - key: AZURE_TRANSLATOR_ENDPOINT
+        value: https://api.cognitive.microsofttranslator.com
+
+  - type: web
+    name: safevoice-worldwide
+    env: static
+    rootDir: worldwide
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    pullRequestPreviewsEnabled: false
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://safevoice.onrender.com/api

@@ -1,0 +1,22 @@
+{
+  "name": "safevoice",
+  "version": "1.0.0",
+  "description": "SafeVoice root workspace for backend and worldwide commands",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npm run dev:backend",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:worldwide": "npm --prefix worldwide run dev",
+    "start": "npm run start:backend",
+    "start:backend": "npm --prefix backend run start",
+    "build": "npm run build:worldwide",
+    "build:worldwide": "npm --prefix worldwide run build",
+    "install:backend": "npm --prefix backend install",
+    "install:worldwide": "npm --prefix worldwide install",
+    "install:all": "npm --prefix backend install && npm --prefix worldwide install"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

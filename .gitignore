@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+backend/node_modules/
+worldwide/node_modules/
+
+# Private env files - never push these
+.env
+.env.*
+backend/.env
+worldwide/.env
+
+# Keep safe sample env files
+!backend/.env.sample
+!worldwide/.env.sample
+
+# Build/cache/logs
+build/
+dist/
+coverage/
+worldwide/dist/
+backend/dist/
+.vite/
+.cache/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Git folder should never be inside shared zip
+.git/

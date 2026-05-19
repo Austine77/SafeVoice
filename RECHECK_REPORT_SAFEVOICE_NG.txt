@@ -1,0 +1,43 @@
+SAFE VOICE NG - RECHECK REPORT
+
+Checked and fixed:
+1. worldwide build command works: npm --prefix worldwide run build.
+2. Backend imports load correctly after npm install.
+3. Added/fixed backend/.env and worldwide/.env for local development.
+4. Added .env.example files for safe GitHub/Render setup.
+5. Fixed invalid Render hostnames that used underscores:
+   - Changed safe_voice_ng-backend.onrender.com to safevoice-ng-backend.onrender.com
+   - Changed safe_voice-worldwide.onrender.com to safevoice-ng-worldwide.onrender.com
+   Domain names should not use underscores.
+6. Fixed backend message serialization bug: chat messages now return properly instead of undefined.
+7. Render config updated with backend and worldwide service names.
+8. Worldwide API connection checked for localhost and Render production fallback.
+
+What still needs your real value before production:
+1. Render backend MONGODB_URI must be your real MongoDB Atlas connection string.
+2. Render backend JWT_SECRET and AUTH_SECRET must be strong random secret values.
+3. After Render creates your services, confirm the actual service URLs. If Render gives a different URL, update:
+   - worldwide/.env production value
+   - backend CLIENT_URL, WORLDWIDE_URL, CORS_ORIGINS
+   - meta API base values in worldwide/index.html, staff.html, police-contact.html, social-worker-contact.html if needed.
+4. Staff/admin account creation works from staff.html, but for real production you may want to restrict who can create admin accounts.
+5. Police nearby lookup uses external OpenStreetMap/Overpass APIs; it depends on internet access and may fail if those services are down or rate-limited.
+
+Local run:
+1. Start MongoDB locally or use MongoDB Atlas in backend/.env.
+2. Backend:
+   cd backend
+   npm install
+   npm start
+3. Worldwide:
+   cd worldwide
+   npm install
+   npm run dev
+
+Render worldwide build command:
+npm install && npm run build && cp staff.html dist/staff.html && cp team.html dist/team.html && cp police-contact.html dist/police-contact.html && cp social-worker-contact.html dist/social-worker-contact.html && mkdir -p dist/assets dist/images && cp assets/police-contact.css dist/assets/police-contact.css && cp assets/police-contact.js dist/assets/police-contact.js && cp assets/social-worker-contact.js dist/assets/social-worker-contact.js && cp assets/social-workers-data.json dist/assets/social-workers-data.json && if [ -d images ]; then cp -r images/. dist/images/; fi
+
+Render backend:
+Root Directory: backend
+Build Command: npm install
+Start Command: node server.js

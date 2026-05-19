@@ -1,0 +1,57 @@
+SafeVoice environment setup
+
+Files added:
+- backend/.env
+- backend/.env.example
+- worldwide/.env
+- worldwide/.env.example
+- .env.example
+
+LOCAL DEVELOPMENT
+1. Install dependencies:
+   npm install
+   cd backend && npm install
+   cd ../worldwide && npm install
+
+2. Backend env file is backend/.env.
+   Default local MongoDB value is:
+   MONGODB_URI=mongodb://127.0.0.1:27017/safe_voice
+
+   If you use MongoDB Atlas, replace MONGODB_URI with your real Atlas string.
+
+3. Start backend:
+   cd backend
+   npm run dev
+
+4. Start worldwide in another terminal:
+   cd worldwide
+   npm run dev
+
+5. Test backend:
+   http://localhost:5000/api/health
+
+RENDER PRODUCTION
+Backend service:
+- Root Directory: backend
+- Build Command: npm install
+- Start Command: node server.js
+- Add these environment variables in Render:
+  NODE_ENV=production
+  PORT=5000
+  MONGODB_URI=your MongoDB Atlas connection string
+  CLIENT_URL=https://safevoice-worldwide.onrender.com
+  WORLDWIDE_URL=https://safevoice-worldwide.onrender.com
+  CORS_ORIGINS=https://safevoice-worldwide.onrender.com,http://localhost:5173,http://127.0.0.1:5173
+  JWT_SECRET=long random secret
+  AUTH_SECRET=long random secret
+  USER_AGENT=SafeVoicePoliceContact/1.0
+
+worldwide service:
+- Root Directory: worldwide
+- Build Command: npm install && npm run build && cp staff.html dist/staff.html && cp team.html dist/team.html && cp police-contact.html dist/police-contact.html && cp social-worker-contact.html dist/social-worker-contact.html && mkdir -p dist/assets dist/images && cp assets/police-contact.css dist/assets/police-contact.css && cp assets/police-contact.js dist/assets/police-contact.js && cp assets/social-worker-contact.js dist/assets/social-worker-contact.js && cp assets/social-workers-data.json dist/assets/social-workers-data.json && if [ -d images ]; then cp -r images/. dist/images/; fi
+- Publish Directory: dist
+- Add VITE_API_BASE_URL=https://safevoice.onrender.com/api
+
+IMPORTANT
+The project cannot connect to your real database until you replace MONGODB_URI with your real MongoDB Atlas URI.
+Do not commit real secrets to GitHub.

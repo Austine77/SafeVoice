@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="safevoice-api-base" content="https://safevoice.onrender.com/api">
+  <title>SafeVoice Worldwide Police Contact System</title>
+  <link rel="stylesheet" href="./assets/police-contact.css">
+</head>
+<body>
+  <div class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">SafeVoice Worldwide Staff Tool</p>
+        <h1>Worldwide Police / Law-Enforcement Contact System</h1>
+        <p class="subcopy">Search the 2026 global police and emergency directory by country. Records marked “requires local verification” must be confirmed from official country sources before operational case handover.</p>
+      </div>
+      <div class="hero-actions">
+        <a class="ghost-btn" href="/staff.html">Back to staff dashboard</a>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="card">
+        <h2>Global police directory</h2>
+        <div class="stack">
+          <div class="field">
+            <label for="countrySelect">Select country</label>
+            <select id="countrySelect"></select>
+          </div>
+          <div class="field">
+            <label for="directoryInput">Search agency, country, notes, emergency number, or source</label>
+            <input id="directoryInput" type="text" placeholder="United States, Ghana, emergency, police, law enforcement">
+          </div>
+          <div class="btn-row">
+            <button id="searchDirectoryBtn" type="button" class="secondary-btn">Search directory</button>
+            <button id="loadAllBtn" type="button" class="ghost-btn">Show selected country</button>
+          </div>
+          <div class="directory-legend">
+            <span class="badge verified">Verified / official source</span>
+            <span class="badge escalation">Needs local verification</span>
+          </div>
+        </div>
+        <div id="directoryStatus" class="status info"></div>
+        <div id="directoryResults" class="accordion-list"></div>
+      </section>
+
+      <section class="card">
+        <h2>How staff should use this</h2>
+        <div class="notice">
+          Use emergency numbers only for urgent danger. For non-emergency police transfer, confirm the country, state/province, city, and official agency line before sharing any case details.
+        </div>
+        <div class="btn-row" style="margin-top:14px;">
+          <a class="secondary-btn" href="./social-worker-contact.html">Open worldwide social worker system</a>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="./global-data.js"></script>
+  <script src="./assets/police-contact.js"></script>
+</body>
+</html>
